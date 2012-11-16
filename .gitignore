@@ -1,0 +1,10 @@
+*.o
+build/
+disassembly/
+dist/
+nbproject/*
+!nbproject/Makefile-impl.mk
+!nbproject/Makefile-variables.mk
+!nbproject/configurations.xml
+!nbproject/project.properties
+!nbproject/project.xml
