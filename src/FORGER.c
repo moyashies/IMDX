@@ -12,13 +12,6 @@ _FOSC(POSCMD_NONE & OSCIOFNC_ON & IOL1WAY_OFF & FCKSM_CSDCMD);
 _FOSCSEL(FNOSC_FRCPLL & PWMLOCK_OFF & IESO_OFF);
 _FGS(GWRP_OFF & GCP_OFF);
 
-typedef unsigned char uc;
-typedef unsigned int ui;
-typedef unsigned long ul;
-typedef signed char sc;
-typedef signed int si;
-typedef signed long sl;
-
 #define P_PSW   (~PORTB&0x0080)
 #define P_SSW   (~PORTB&0x0100)
 #define P_BEEP  LATBbits.LATB9
@@ -78,9 +71,9 @@ void initUART();
 void initT1();
 void initOC1();
 void initInt();
-void beep(uc en);
-uc readI2C(uc device, uc address, uc * dataP, uc length);
-uc sendI2C(uc device, uc address, uc * dataP, uc length);
+void beep(unsigned char en);
+unsigned char readI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
+unsigned char sendI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
 void stop();
 
 // Instantiate Drive and Data objects
@@ -92,46 +85,46 @@ unsigned int wBuff[10], rBuff[10];
 unsigned int enable;
 
 
-ui i = 0;
+unsigned int i = 0;
 
-ui count = 0;
+unsigned int count = 0;
 
-ui c = 0;
-ui receivedIndex = 0;
-ui receivingIndex = 0;
-ui receiving[9];
-ui received[9];
-ui dataOK = 0;
+unsigned int c = 0;
+unsigned int receivedIndex = 0;
+unsigned int receivingIndex = 0;
+unsigned int receiving[9];
+unsigned int received[9];
+unsigned int dataOK = 0;
 
-ui pswC = 0;
-ui pswF = 0;
-ui pswV = 0;
+unsigned int pswC = 0;
+unsigned int pswF = 0;
+unsigned int pswV = 0;
 
-ui sswC = 0;
-ui sswF = 0;
-ui sswV = 0;
+unsigned int sswC = 0;
+unsigned int sswF = 0;
+unsigned int sswV = 0;
 
-ui leds = 0;
-ui ledCount;
+unsigned int leds = 0;
+unsigned int ledCount;
 
-ui motorEnable = 0;
+unsigned int motorEnable = 0;
 
-si angle[3];
-si acce[3];
-si gyro[3];
+signed int angle[3];
+signed int acce[3];
+signed int gyro[3];
 
-si angleBefore[3];
-si gyroBefore[3];
+signed int angleBefore[3];
+signed int gyroBefore[3];
 
-si gyroXPD;
-si angleXPD;
-si gyroYPD;
-si angleYPD;
+signed int gyroXPD;
+signed int angleXPD;
+signed int gyroYPD;
+signed int angleYPD;
 
-ui pwml;
-ui pwmr;
-ui pwmf;
-ui pwmb;
+unsigned int pwml;
+unsigned int pwmr;
+unsigned int pwmf;
+unsigned int pwmb;
 
 int main(void)
 {
@@ -279,7 +272,7 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        acce[0] = (si) ((sc) rBuff[0]);
+        acce[0] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = ACCE;
@@ -290,7 +283,7 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        acce[1] = (si) ((sc) rBuff[0]);
+        acce[1] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = ACCE;
@@ -301,7 +294,7 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        acce[2] = (si) ((sc) rBuff[0]);
+        acce[2] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = GYRO;
@@ -312,7 +305,7 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        gyro[0] = (si) ((sc) rBuff[0]);
+        gyro[0] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = GYRO;
@@ -323,7 +316,7 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        gyro[1] = (si) ((sc) rBuff[0]);
+        gyro[1] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = GYRO;
@@ -334,15 +327,15 @@ int main(void)
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        gyro[2] = (si) ((sc) rBuff[0]);
+        gyro[2] = (signed int) ((signed char) rBuff[0]);
         angle[0] =
-            (si) (atan2f((float) (acce[1]), (float) (-acce[2])) / 3.14 *
+            (signed int) (atan2f((float) (acce[1]), (float) (-acce[2])) / 3.14 *
                   180);
         angle[1] =
-            (si) (atan2f((float) (acce[0]), (float) (-acce[2])) / 3.14 *
+            (signed int) (atan2f((float) (acce[0]), (float) (-acce[2])) / 3.14 *
                   180);
         angle[2] =
-            (si) (atan2f((float) (acce[0]), (float) (-acce[1])) / 3.14 *
+            (signed int) (atan2f((float) (acce[0]), (float) (-acce[1])) / 3.14 *
                   180);
     }
     return 0;
@@ -397,7 +390,7 @@ void _ISR _U1RXInterrupt(void)
     case 'h':
     case 'i':
         receivingIndex = c - 'a';
-        receivedIndex |= (ui) 0x0001 << receivingIndex;
+        receivedIndex |= (unsigned int) 0x0001 << receivingIndex;
         receiving[receivingIndex] = 0;
         break;
     case '0':
@@ -410,7 +403,7 @@ void _ISR _U1RXInterrupt(void)
     case '7':
     case '8':
     case '9':
-        if ((ui) receiving[receivingIndex] * 10 + (c - '0') < 256) {
+        if ((unsigned int) receiving[receivingIndex] * 10 + (c - '0') < 256) {
             receiving[receivingIndex] =
                 receiving[receivingIndex] * 10 + (c - '0');
         } else {
@@ -488,17 +481,17 @@ void _ISRFAST _T1Interrupt(void)
     //高度をできるだけ保つ
 
     angleXPD =
-        (si) angle[1] * (si) ACCEXYKP + (si) (angleBefore[1] -
-                                              angle[1]) * (si) ACCEXYKD;
+        (signed int) angle[1] * (signed int) ACCEXYKP + (signed int) (angleBefore[1] -
+                                              angle[1]) * (signed int) ACCEXYKD;
     angleYPD =
-        (si) angle[0] * (si) ACCEXYKP + (si) (angleBefore[0] -
-                                              angle[0]) * (si) ACCEXYKD;
+        (signed int) angle[0] * (signed int) ACCEXYKP + (signed int) (angleBefore[0] -
+                                              angle[0]) * (signed int) ACCEXYKD;
     gyroXPD =
-        (si) gyro[1] * GYROXYKP + (si) (gyroBefore[1] -
-                                        gyro[1]) * (si) GYROXYKD;
+        (signed int) gyro[1] * GYROXYKP + (signed int) (gyroBefore[1] -
+                                        gyro[1]) * (signed int) GYROXYKD;
     gyroYPD =
-        (si) gyro[0] * GYROXYKP + (si) (gyroBefore[0] -
-                                        gyro[0]) * (si) GYROXYKD;
+        (signed int) gyro[0] * GYROXYKP + (signed int) (gyroBefore[0] -
+                                        gyro[0]) * (signed int) GYROXYKD;
 
     if (motorEnable) {
         if (dataOK) {
@@ -510,21 +503,21 @@ void _ISRFAST _T1Interrupt(void)
                 pwmb = PWMSTOP;
             } else {
                 pwml =
-                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-                    (si) (received[2] - 128) * (si) PWMHANDLE -
-                    (si) angleXPD - gyroXPD - (si) gyro[2] * (si) 32;
+                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
+                    (signed int) (received[2] - 128) * (signed int) PWMHANDLE -
+                    (signed int) angleXPD - gyroXPD - (signed int) gyro[2] * (signed int) 32;
                 pwmr =
-                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-                    (si) (128 - received[2]) * (si) PWMHANDLE +
-                    (si) angleXPD + gyroXPD - (si) gyro[2] * (si) 32;
+                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
+                    (signed int) (128 - received[2]) * (signed int) PWMHANDLE +
+                    (signed int) angleXPD + gyroXPD - (signed int) gyro[2] * (signed int) 32;
                 pwmf =
-                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-                    (si) (128 - received[3]) * (si) PWMHANDLE -
-                    (si) angleXPD - gyroXPD + (si) gyro[2] * (si) 32;
+                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
+                    (signed int) (128 - received[3]) * (signed int) PWMHANDLE -
+                    (signed int) angleXPD - gyroXPD + (signed int) gyro[2] * (signed int) 32;
                 pwmb =
-                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-                    (si) (received[3] - 128) * (si) PWMHANDLE +
-                    (si) angleXPD + gyroXPD + (si) gyro[2] * (si) 32;
+                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
+                    (signed int) (received[3] - 128) * (signed int) PWMHANDLE +
+                    (signed int) angleXPD + gyroXPD + (signed int) gyro[2] * (signed int) 32;
             }
         }
     } else {
@@ -698,7 +691,7 @@ void initInt()
     IFS0 = 0x0000;                //T1
 }
 
-void beep(uc en)
+void beep(unsigned char en)
 {
     if (en)
         OC1R = 1000;
