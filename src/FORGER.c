@@ -2,6 +2,8 @@
 #include <math.h>
 #include "../h/i2cEmem.h"
 
+#include "../h/st.h"
+
 _FICD(ICS_PGD3 & JTAGEN_OFF);
 _FPOR(ALTI2C1_OFF & ALTI2C2_ON & WDTWIN_WIN50);
 _FWDT(WDTPOST_PS32768 & WDTPRE_PR128 & PLLKEN_ON & WINDIS_OFF &
@@ -89,13 +91,7 @@ void initInt();
 void beep(uc en);
 uc readI2C(uc device, uc address, uc * dataP, uc length);
 uc sendI2C(uc device, uc address, uc * dataP, uc length);
-void st(char *uartString);
-void st255(char *uartString, uc num);
-void st128(char *uartString, char num);
-void st32768(char *uartString, int num);
-void stff(char *uartString, uc num);
 void stop();
-
 
 // Instantiate Drive and Data objects
 I2CEMEM_DRV i2cmem = I2CSEMEM_DRV_DEFAULTS;
@@ -280,8 +276,7 @@ int main(void)
 	}
 	if (pswF && pswV) {
 	    pswF = 0;
-	    while (U1STAbits.UTXBF);
-	    U1TXREG = 'S';
+	    st("s");
 	}
 	leds ^= 0x04;
 	if (dataOK) {
@@ -833,148 +828,4 @@ void beep(uc en)
 	OC1R = 1000;
     else
 	OC1R = 0;
-}
-
-void st(char *uartString)
-{
-    uc countC = 0;
-    while (uartString[countC] != '\0' && countC < 50) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = uartString[countC];
-	countC++;
-    }
-    while (U1STAbits.UTXBF);
-    U1TXREG = '\r';
-    while (U1STAbits.UTXBF);
-    U1TXREG = '\n';
-}
-
-void st255(char *uartString, uc num)
-{
-    uc countC = 0;
-    while (uartString[countC] != '\0' && countC < 50) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = uartString[countC];
-	countC++;
-    }
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='=';
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 100 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 10 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num % 10;
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\r';
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\n';
-}
-
-void st128(char *uartString, char num)
-{
-    uc countC = 0;
-    while (uartString[countC] != '\0' && countC < 50) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = uartString[countC];
-	countC++;
-    }
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='=';
-    while (U1STAbits.UTXBF);
-    if (num < 0) {
-	U1TXREG = '-';
-	num = -num;
-    } else {
-	U1TXREG = ' ';
-	num = num;
-    }
-    if (num == -128) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = '1';
-	while (U1STAbits.UTXBF);
-	U1TXREG = '2';
-	while (U1STAbits.UTXBF);
-	U1TXREG = '8';
-    } else {
-	while (U1STAbits.UTXBF);
-	U1TXREG = '0' + num / 100 % 10;
-	while (U1STAbits.UTXBF);
-	U1TXREG = '0' + num / 10 % 10;
-	while (U1STAbits.UTXBF);
-	U1TXREG = '0' + num % 10;
-    }
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\r';
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\n';
-}
-
-void st32768(char *uartString, int num)
-{
-    uc countC = 0;
-    while (uartString[countC] != '\0' && countC < 50) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = uartString[countC];
-	countC++;
-    }
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='=';
-    while (U1STAbits.UTXBF);
-    if (num < 0) {
-	U1TXREG = '-';
-	num = -num;
-    } else {
-	U1TXREG = ' ';
-    }
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 10000 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 1000 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 100 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num / 10 % 10;
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0' + num % 10;
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\r';
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='\n';
-}
-
-void stff(char *uartString, uc num)
-{
-    uc countC = 0;
-    while (uartString[countC] != '\0' && countC < 50) {
-	while (U1STAbits.UTXBF);
-	U1TXREG = uartString[countC];
-	countC++;
-    }
-//      while(U1STAbits.UTXBF);
-//      U1TXREG='=';
-    while (U1STAbits.UTXBF);
-    U1TXREG = '0';
-    while (U1STAbits.UTXBF);
-    U1TXREG = 'x';
-    if (num > 0x9f) {
-	while (U1STAbits.UTXBF);
-	//U1TXREG='a'-0xa+num/16;
-	U1TXREG = 'W' + num / 16;
-    } else {
-	while (U1STAbits.UTXBF);
-	U1TXREG = '0' + num / 16;
-    }
-    if ((num & 0x0f) > 0x09) {
-	while (U1STAbits.UTXBF);
-	//U1TXREG='a'-0xa+(num&0xf);
-	U1TXREG = 'W' + (num & 0xf);
-    } else {
-	while (U1STAbits.UTXBF);
-	U1TXREG = '0' + num % 16;
-    }
-    while (U1STAbits.UTXBF);
-    U1TXREG = '\r';
-    while (U1STAbits.UTXBF);
-    U1TXREG = '\n';
 }
