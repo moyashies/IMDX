@@ -19,65 +19,55 @@ typedef signed char sc;
 typedef signed int si;
 typedef signed long sl;
 
-#define	P_PSW	(~PORTB&0x0080)
-#define	P_SSW	(~PORTB&0x0100)
-#define	P_BEEP	LATBbits.LATB9
-#define	P_LED0	LATAbits.LATA2
-#define	P_LED1	LATAbits.LATA3
-#define	P_LED2	LATBbits.LATB0
-#define	P_LED3	LATBbits.LATB1
+#define P_PSW   (~PORTB&0x0080)
+#define P_SSW   (~PORTB&0x0100)
+#define P_BEEP  LATBbits.LATB9
+#define P_LED0  LATAbits.LATA2
+#define P_LED1  LATAbits.LATA3
+#define P_LED2  LATBbits.LATB0
+#define P_LED3  LATBbits.LATB1
 
-#define	PWML	PDC3
-#define	PWMR	OC2R
-#define	PWMF	PDC1
-#define	PWMB	PDC2
+#define PWML  PDC3
+#define PWMR  OC2R
+#define PWMF  PDC1
+#define PWMB  PDC2
 
 //35001
-#define PWMMAX		30000
-#define PWMLMAX		30000
-#define PWMRMAX		15000
-#define PWMFMAX		30000
-#define PWMBMAX		30000
+#define PWMMAX   30000
+#define PWMLMAX  30000
+#define PWMRMAX  15000
+#define PWMFMAX  30000
+#define PWMBMAX  30000
 
-#define PWMMIN		21000
-#define PWMLMIN		21200
-#define PWMRMIN		10600
-#define PWMFMIN		21200
-#define PWMBMIN		21200
+#define PWMMIN   21000
+#define PWMLMIN  21200
+#define PWMRMIN  10600
+#define PWMFMIN  21200
+#define PWMBMIN  21200
 
-#define PWMSTOP		18000
-#define PWMLSTOP	18000
-#define PWMRSTOP	9000
-#define PWMFSTOP	18000
-#define PWMBSTOP	18000
+#define PWMSTOP   18000
+#define PWMLSTOP  18000
+#define PWMRSTOP  9000
+#define PWMFSTOP  18000
+#define PWMBSTOP  18000
 
-#define	PWMTHR		8
-#define	PWMLTHR		8
-#define	PWMRTHR		4
-#define	PWMFTHR		8
-#define	PWMBTHR		8
+#define PWMTHR   8
+#define PWMLTHR  8
+#define PWMRTHR  4
+#define PWMFTHR  8
+#define PWMBTHR  8
 
-#define	PWMHANDLE	2
-#define	PWMLHANDLE	2
-#define	PWMRHANDLE	1
-#define	PWMFHANDLE	2
-#define	PWMBHANDLE	2
-//
-//#define       PWMLACCE        2
-//#define       PWMRACCE        1
-//#define       PWMFACCE        2
-//#define       PWMBACCE        2
-//
-//#define       PWMLGYRO        4
-//#define       PWMRGYRO        2
-//#define       PWMFGYRO        4
-//#define       PWMBGYRO        4
+#define PWMHANDLE   2
+#define PWMLHANDLE  2
+#define PWMRHANDLE  1
+#define PWMFHANDLE  2
+#define PWMBHANDLE  2
 
-#define	GYROXYKP	10
-#define	GYROXYKD	0
+#define GYROXYKP  10
+#define GYROXYKD  0
 
-#define	ACCEXYKP	3
-#define	ACCEXYKD	3
+#define ACCEXYKP  3
+#define ACCEXYKD  3
 
 void initOsc();
 void initPort();
@@ -126,7 +116,6 @@ ui ledCount;
 
 ui motorEnable = 0;
 
-//uc i2cData[16];
 si angle[3];
 si acce[3];
 si gyro[3];
@@ -158,18 +147,17 @@ int main(void)
 
     i2cmem.init(&i2cmem);
 
-// Initialise Data to be written to serial EEPROM
+    // Initialise Data to be written to serial EEPROM
     for (i = 0; i < 10; i++)
-	wBuff[i] = i;
+        wBuff[i] = i;
 
-// Initialise I2C Data object for Write operation
+    // Initialise I2C Data object for Write operation
     wData.buff = wBuff;
     wData.n = 1;
     wData.addr = 0x28;
     wData.devSel = 0x00;
 
-
-// Initialise I2C Data Object for Read operation
+    // Initialise I2C Data Object for Read operation
     rData.buff = rBuff;
     rData.n = 1;
     rData.addr = 0x29;
@@ -209,11 +197,9 @@ int main(void)
     i = 0;
     beep(0);
     stop();
-//      while(!pswV);
-//      while(pswV);
     leds = 0x03;
 
-    //Initialise ACCE
+    // Initialise ACCE
     wData.devSel = ACCE;
     wData.addr = 0x20;
     wData.n = 1;
@@ -224,10 +210,10 @@ int main(void)
     i2cmem.cmd = I2C_WRITE;
 
     while (i2cmem.cmd != I2C_IDLE) {
-	i2cmem.tick(&i2cmem);
+        i2cmem.tick(&i2cmem);
     }
 
-    //Initialise GYRO
+    // Initialise GYRO
     wData.devSel = GYRO;
     wData.addr = 0x20;
     wData.n = 1;
@@ -238,7 +224,7 @@ int main(void)
     i2cmem.cmd = I2C_WRITE;
 
     while (i2cmem.cmd != I2C_IDLE) {
-	i2cmem.tick(&i2cmem);
+        i2cmem.tick(&i2cmem);
     }
 
     wData.devSel = GYRO;
@@ -251,7 +237,7 @@ int main(void)
     i2cmem.cmd = I2C_WRITE;
 
     while (i2cmem.cmd != I2C_IDLE) {
-	i2cmem.tick(&i2cmem);
+        i2cmem.tick(&i2cmem);
     }
 
     wData.devSel = GYRO;
@@ -264,192 +250,100 @@ int main(void)
     i2cmem.cmd = I2C_WRITE;
 
     while (i2cmem.cmd != I2C_IDLE) {
-	i2cmem.tick(&i2cmem);
+        i2cmem.tick(&i2cmem);
     }
 
     st("started!");
     while (1) {
-	if (sswV) {
-	    motorEnable = 1;
-	} else {
-	    motorEnable = 0;
-	}
-	if (pswF && pswV) {
-	    pswF = 0;
-	    st("s");
-	}
-	leds ^= 0x04;
-	if (dataOK) {
-	    dataOK = 0;
-	    leds ^= 0x08;
-	    //st("data ok!");
-	    leds = received[0];
-	}
-	//st("M");
-	// Read Data
-	rData.devSel = ACCE;
-	rData.addr = 0x29;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	acce[0] = (si) ((sc) rBuff[0]);
-	//              st255("",(uc)rBuff[0]+128);
+        if (sswV) {
+            motorEnable = 1;
+        } else {
+            motorEnable = 0;
+        }
+        if (pswF && pswV) {
+            pswF = 0;
+            st("s");
+        }
+        leds ^= 0x04;
+        if (dataOK) {
+            dataOK = 0;
+            leds ^= 0x08;
+            leds = received[0];
+        }
+        // Read Data
+        rData.devSel = ACCE;
+        rData.addr = 0x29;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        acce[0] = (si) ((sc) rBuff[0]);
 
-	// Read Data
-	rData.devSel = ACCE;
-	rData.addr = 0x2b;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	acce[1] = (si) ((sc) rBuff[0]);
-	//              st255(":",(uc)rBuff[0]+128);
+        // Read Data
+        rData.devSel = ACCE;
+        rData.addr = 0x2b;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        acce[1] = (si) ((sc) rBuff[0]);
 
-	// Read Data
-	rData.devSel = ACCE;
-	rData.addr = 0x2d;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	acce[2] = (si) ((sc) rBuff[0]);
+        // Read Data
+        rData.devSel = ACCE;
+        rData.addr = 0x2d;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        acce[2] = (si) ((sc) rBuff[0]);
 
-	//              st255(":",(uc)rBuff[0]+128);
-	// Read Data
-	rData.devSel = GYRO;
-	rData.addr = 0x29;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	gyro[0] = (si) ((sc) rBuff[0]);
-	//st255(",Gx",(uc)rBuff[0]+128);
+        // Read Data
+        rData.devSel = GYRO;
+        rData.addr = 0x29;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        gyro[0] = (si) ((sc) rBuff[0]);
 
-	// Read Data
-	rData.devSel = GYRO;
-	rData.addr = 0x2b;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	gyro[1] = (si) ((sc) rBuff[0]);
-	//st255(",Gy",(uc)rBuff[0]+128);
+        // Read Data
+        rData.devSel = GYRO;
+        rData.addr = 0x2b;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        gyro[1] = (si) ((sc) rBuff[0]);
 
-	// Read Data
-	rData.devSel = GYRO;
-	rData.addr = 0x2d;
-	rData.n = 1;
-	i2cmem.oData = &rData;
-	i2cmem.cmd = I2C_READ;
-	while (i2cmem.cmd != I2C_IDLE) {
-	    i2cmem.tick(&i2cmem);
-	}
-	gyro[2] = (si) ((sc) rBuff[0]);
-//              }
-	//st255(",Gz",(uc)rBuff[0]+128);
-//                                                              atan2f((float)-1,(float)-1)*180/3.14
-	angle[0] =
-	    (si) (atan2f((float) (acce[1]), (float) (-acce[2])) / 3.14 *
-		  180);
-	angle[1] =
-	    (si) (atan2f((float) (acce[0]), (float) (-acce[2])) / 3.14 *
-		  180);
-	angle[2] =
-	    (si) (atan2f((float) (acce[0]), (float) (-acce[1])) / 3.14 *
-		  180);
-
-//                                      st32768("",pwml);
-//                                      st32768(",",pwmr);
-//                                      st32768(",",pwmf);
-//                                      st32768(",",pwmb);
-//                                      st("");
-//                      if(acce[1]<0)
-//                      {
-//                              if(acce[2]<0)
-//                              {
-//                                      angle[0]=(si)(atan2f((float)(-acce[1]),(float)(-acce[2]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[0]=(si)(atan2f((float)(-acce[1]),(float)(acce[2]))/3.14*180);
-//                              }
-//                      }
-//                      else
-//                      {
-//                              if(acce[2]<0)
-//                              {
-//                                      angle[0]=(si)(atan2f((float)(acce[1]),(float)(-acce[2]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[0]=(si)(atan2f((float)(acce[1]),(float)(acce[2]))/3.14*180);
-//                              }
-//                      }
-//                      if(acce[0]<0)
-//                      {
-//                              if(acce[2]<0)
-//                              {
-//                                      angle[1]=(si)(atan2f((float)(-acce[0]),(float)(-acce[2]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[1]=(si)(atan2f((float)(-acce[0]),(float)(acce[2]))/3.14*180);
-//                              }
-//                      }
-//                      else
-//                      {
-//                              if(acce[2]<0)
-//                              {
-//                                      angle[1]=(si)(atan2f((float)(acce[0]),(float)(-acce[2]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[1]=(si)(atan2f((float)(acce[0]),(float)(acce[2]))/3.14*180);
-//                              }
-//                      }
-//                      if(acce[0]<0)
-//                      {
-//                              if(acce[1]<0)
-//                              {
-//                                      angle[2]=(si)(atan2f((float)(-acce[0]),(float)(-acce[1]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[2]=(si)(atan2f((float)(-acce[0]),(float)(acce[1]))/3.14*180);
-//                              }
-//                      }
-//                      else
-//                      {
-//                              if(acce[1]<0)
-//                              {
-//                                      angle[2]=(si)(atan2f((float)(acce[0]),(float)(-acce[1]))/3.14*180);
-//                              }
-//                              else
-//                              {
-//                                      angle[2]=(si)(atan2f((float)(acce[0]),(float)(acce[1]))/3.14*180);
-//                              }
-//                      }
-//                      st128("",acce[0]);
-//                      st128(",",acce[1]);
-//                      st128(",",acce[2]);
-//                              st32768(",",angle[0]);
-//                              st32768(",",angle[1]);
-//                              st32768(",",angle[2]);
-//                              st128(",",gyro[0]);
-//                              st128(",",gyro[1]);
-//                              st128(",",gyro[2]);
-//                              st("");
+        // Read Data
+        rData.devSel = GYRO;
+        rData.addr = 0x2d;
+        rData.n = 1;
+        i2cmem.oData = &rData;
+        i2cmem.cmd = I2C_READ;
+        while (i2cmem.cmd != I2C_IDLE) {
+            i2cmem.tick(&i2cmem);
+        }
+        gyro[2] = (si) ((sc) rBuff[0]);
+        angle[0] =
+            (si) (atan2f((float) (acce[1]), (float) (-acce[2])) / 3.14 *
+                  180);
+        angle[1] =
+            (si) (atan2f((float) (acce[0]), (float) (-acce[2])) / 3.14 *
+                  180);
+        angle[2] =
+            (si) (atan2f((float) (acce[0]), (float) (-acce[1])) / 3.14 *
+                  180);
     }
     return 0;
 }
@@ -464,44 +358,35 @@ void _ISR _U1RXInterrupt(void)
     IFS0bits.U1RXIF = 0;
     c = U1RXREG;
 
-//      if(c<0x3a&&c>0x2f)
-//      {
-//      received[0]=c;
-//      dataOK=1;
-//      }
-
-    //U1TXREG=c;
     leds = c & 0x0f;
-    //while(U1STAbits.UTXBF);
-    //U1TXREG=c;
     switch (c) {
     case 'k':
-	receiving[0] = 0;
-	receiving[1] = 0;
-	receiving[2] = 0;
-	receiving[3] = 0;
-	receiving[4] = 0;
-	receiving[5] = 0;
-	receiving[6] = 0;
-	receiving[7] = 0;
-	receiving[8] = 0;
-	receivedIndex = 0;
-	receivingIndex = 0;
-	break;
+        receiving[0] = 0;
+        receiving[1] = 0;
+        receiving[2] = 0;
+        receiving[3] = 0;
+        receiving[4] = 0;
+        receiving[5] = 0;
+        receiving[6] = 0;
+        receiving[7] = 0;
+        receiving[8] = 0;
+        receivedIndex = 0;
+        receivingIndex = 0;
+        break;
     case 'j':
-	if (receivedIndex == 0x01ff) {
-	    received[0] = receiving[0];
-	    received[1] = receiving[1];
-	    received[2] = receiving[2];
-	    received[3] = receiving[3];
-	    received[4] = receiving[4];
-	    received[5] = receiving[5];
-	    received[6] = receiving[6];
-	    received[7] = receiving[7];
-	    received[8] = receiving[8];
-	    dataOK = 1;
-	}
-	break;
+        if (receivedIndex == 0x01ff) {
+            received[0] = receiving[0];
+            received[1] = receiving[1];
+            received[2] = receiving[2];
+            received[3] = receiving[3];
+            received[4] = receiving[4];
+            received[5] = receiving[5];
+            received[6] = receiving[6];
+            received[7] = receiving[7];
+            received[8] = receiving[8];
+            dataOK = 1;
+        }
+        break;
     case 'a':
     case 'b':
     case 'c':
@@ -511,10 +396,10 @@ void _ISR _U1RXInterrupt(void)
     case 'g':
     case 'h':
     case 'i':
-	receivingIndex = c - 'a';
-	receivedIndex |= (ui) 0x0001 << receivingIndex;
-	receiving[receivingIndex] = 0;
-	break;
+        receivingIndex = c - 'a';
+        receivedIndex |= (ui) 0x0001 << receivingIndex;
+        receiving[receivingIndex] = 0;
+        break;
     case '0':
     case '1':
     case '2':
@@ -525,16 +410,16 @@ void _ISR _U1RXInterrupt(void)
     case '7':
     case '8':
     case '9':
-	if ((ui) receiving[receivingIndex] * 10 + (c - '0') < 256) {
-	    receiving[receivingIndex] =
-		receiving[receivingIndex] * 10 + (c - '0');
-	} else {
-	    receivedIndex |= 0x0400;
-	}
-	break;
+        if ((ui) receiving[receivingIndex] * 10 + (c - '0') < 256) {
+            receiving[receivingIndex] =
+                receiving[receivingIndex] * 10 + (c - '0');
+        } else {
+            receivedIndex |= 0x0400;
+        }
+        break;
     default:
-	receivedIndex |= 0x0400;
-	break;
+        receivedIndex |= 0x0400;
+        break;
     }
 }
 
@@ -550,50 +435,50 @@ void _ISRFAST _T1Interrupt(void)
 
     ledCount++;
     if (ledCount % 16) {
-	P_LED0 = 0;
-	P_LED1 = 0;
+        P_LED0 = 0;
+        P_LED1 = 0;
     } else {
-	if (leds & 1)
-	    P_LED0 = 1;
-	if (leds & 2)
-	    P_LED1 = 1;
+        if (leds & 1)
+            P_LED0 = 1;
+        if (leds & 2)
+            P_LED1 = 1;
     }
     if (ledCount % 2) {
-	P_LED2 = 0;
-	P_LED3 = 0;
+        P_LED2 = 0;
+        P_LED3 = 0;
     } else {
-	if (leds & 4)
-	    P_LED2 = 1;
-	if (leds & 8)
-	    P_LED3 = 1;
+        if (leds & 4)
+            P_LED2 = 1;
+        if (leds & 8)
+            P_LED3 = 1;
     }
 
     if (i < 65535)
-	i++;
+        i++;
 
     if (P_PSW != pswV) {
-	if ((++pswC) > 50) {
-	    if (P_PSW)
-		pswV = 1;
-	    else
-		pswV = 0;
-	    pswF = 1;
-	    pswC = 0;
-	}
+        if ((++pswC) > 50) {
+            if (P_PSW)
+                pswV = 1;
+            else
+                pswV = 0;
+            pswF = 1;
+            pswC = 0;
+        }
     } else
-	pswC = 0;
+        pswC = 0;
 
     if (P_SSW != sswV) {
-	if ((++sswC) > 50) {
-	    if (P_SSW)
-		sswV = 1;
-	    else
-		sswV = 0;
-	    sswF = 1;
-	    sswC = 0;
-	}
+        if ((++sswC) > 50) {
+            if (P_SSW)
+                sswV = 1;
+            else
+                sswV = 0;
+            sswF = 1;
+            sswC = 0;
+        }
     } else
-	sswC = 0;
+        sswC = 0;
 
     //バランス制御をここに入れる
     //前に傾いている→前の出力UP
@@ -603,55 +488,50 @@ void _ISRFAST _T1Interrupt(void)
     //高度をできるだけ保つ
 
     angleXPD =
-	(si) angle[1] * (si) ACCEXYKP + (si) (angleBefore[1] -
-					      angle[1]) * (si) ACCEXYKD;
+        (si) angle[1] * (si) ACCEXYKP + (si) (angleBefore[1] -
+                                              angle[1]) * (si) ACCEXYKD;
     angleYPD =
-	(si) angle[0] * (si) ACCEXYKP + (si) (angleBefore[0] -
-					      angle[0]) * (si) ACCEXYKD;
+        (si) angle[0] * (si) ACCEXYKP + (si) (angleBefore[0] -
+                                              angle[0]) * (si) ACCEXYKD;
     gyroXPD =
-	(si) gyro[1] * GYROXYKP + (si) (gyroBefore[1] -
-					gyro[1]) * (si) GYROXYKD;
+        (si) gyro[1] * GYROXYKP + (si) (gyroBefore[1] -
+                                        gyro[1]) * (si) GYROXYKD;
     gyroYPD =
-	(si) gyro[0] * GYROXYKP + (si) (gyroBefore[0] -
-					gyro[0]) * (si) GYROXYKD;
+        (si) gyro[0] * GYROXYKP + (si) (gyroBefore[0] -
+                                        gyro[0]) * (si) GYROXYKD;
 
     if (motorEnable) {
-	if (dataOK) {
-	    dataOK = 0;
-	    if (received[5] == 0) {
-		pwml = PWMSTOP;
-		pwmr = PWMSTOP;
-		pwmf = PWMSTOP;
-		pwmb = PWMSTOP;
-	    } else {
-		pwml =
-		    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-		    (si) (received[2] - 128) * (si) PWMHANDLE -
-		    (si) angleXPD - gyroXPD - (si) gyro[2] * (si) 32;
-		pwmr =
-		    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-		    (si) (128 - received[2]) * (si) PWMHANDLE +
-		    (si) angleXPD + gyroXPD - (si) gyro[2] * (si) 32;
-		pwmf =
-		    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-		    (si) (128 - received[3]) * (si) PWMHANDLE -
-		    (si) angleXPD - gyroXPD + (si) gyro[2] * (si) 32;
-		pwmb =
-		    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
-		    (si) (received[3] - 128) * (si) PWMHANDLE +
-		    (si) angleXPD + gyroXPD + (si) gyro[2] * (si) 32;
-
-//                              pwml=PWMMIN+(received[4]-128)*PWMTHR+(received[2]-128)*PWMHANDLE-angle[1]*PWMACCE-gyro[1]*PWMGYRO-gyro[2]*32;
-//                              pwmr=PWMMIN+(received[4]-128)*PWMTHR+(128-received[2])*PWMHANDLE+angle[1]*PWMACCE+gyro[1]*PWMGYRO-gyro[2]*16;
-//                              pwmf=PWMMIN+(received[4]-128)*PWMTHR+(128-received[3])*PWMHANDLE-angle[0]*PWMACCE+gyro[0]*PWMGYRO+gyro[2]*32;
-//                              pwmb=PWMMIN+(received[4]-128)*PWMTHR+(received[3]-128)*PWMHANDLE+angle[0]*PWMACCE-gyro[0]*PWMGYRO+gyro[2]*32;
-	    }
-	}
+        if (dataOK) {
+            dataOK = 0;
+            if (received[5] == 0) {
+                pwml = PWMSTOP;
+                pwmr = PWMSTOP;
+                pwmf = PWMSTOP;
+                pwmb = PWMSTOP;
+            } else {
+                pwml =
+                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
+                    (si) (received[2] - 128) * (si) PWMHANDLE -
+                    (si) angleXPD - gyroXPD - (si) gyro[2] * (si) 32;
+                pwmr =
+                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
+                    (si) (128 - received[2]) * (si) PWMHANDLE +
+                    (si) angleXPD + gyroXPD - (si) gyro[2] * (si) 32;
+                pwmf =
+                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
+                    (si) (128 - received[3]) * (si) PWMHANDLE -
+                    (si) angleXPD - gyroXPD + (si) gyro[2] * (si) 32;
+                pwmb =
+                    (si) PWMMIN + (si) (received[4] - 128) * (si) PWMTHR +
+                    (si) (received[3] - 128) * (si) PWMHANDLE +
+                    (si) angleXPD + gyroXPD + (si) gyro[2] * (si) 32;
+            }
+        }
     } else {
-	pwml = PWMSTOP;
-	pwmr = PWMSTOP;
-	pwmf = PWMSTOP;
-	pwmb = PWMSTOP;
+        pwml = PWMSTOP;
+        pwmr = PWMSTOP;
+        pwmf = PWMSTOP;
+        pwmb = PWMSTOP;
     }
 
     PWML = pwml;
@@ -681,7 +561,6 @@ void initOsc()
     REFOCON = 0x8000;
     OSCCON = 0x0100;
     OSCCON |= 0x0001;
-//      while (OSCCONbits.COSC != 0b011);
     while (OSCCONbits.LOCK != 1);
 }
 
@@ -703,11 +582,11 @@ void initPort()
     CNPUB = 0x0180;
     CNPDB = 0;
 
-    RPINR18 = 0x0022;		//RX1=RPI34
+    RPINR18 = 0x0022;                //RX1=RPI34
 
-    RPOR0 = 0x0100;		//RP35=TX1
-    RPOR3 = 0x1000;		//RP41=OC1
-    RPOR4 = 0x0011;		//RP42=OC2
+    RPOR0 = 0x0100;                //RP35=TX1
+    RPOR3 = 0x1000;                //RP41=OC1
+    RPOR4 = 0x0011;                //RP42=OC2
 
     pswV = P_PSW;
     sswV = P_SSW;
@@ -750,7 +629,6 @@ void initPwm()
     OC2RS = 17500;
     OC2R = 0;
     OC2CON2 = 0x001f;
-    //OC2CON1=0x1c06;
     OC2CON1 = 0x0006;
     OC2CON2 = 0x001f;
 }
@@ -776,7 +654,6 @@ void initAd()
     AD1CSSL = 0x0003;
 }
 
-//uc sendI2C(uc device,uc address,uc *dataP,uc length)
 void initUART()
 {
     //9600bps
@@ -796,7 +673,6 @@ void initT1()
 void initT3()
 {
     T3CON = 0x0010;
-//      PR3=8750;
     TMR3 = 0;
     T3CON |= 0x8000;
 }
@@ -806,7 +682,7 @@ void initOC1()
     OC1TMR = 0;
     OC1RS = 7500;
     OC1R = 0;
-    OC1CON2 = 0x0000;		//1f;
+    OC1CON2 = 0x0000;
     OC1CON1 = 0x1c06;
 }
 
@@ -817,15 +693,15 @@ void initInt()
     INTCON3 = 0x0000;
     INTCON4 = 0x0000;
 
-    IEC0 = 0x1808;		//T1
-    IPC0 = 0x4444;		//T1
-    IFS0 = 0x0000;		//T1
+    IEC0 = 0x1808;                //T1
+    IPC0 = 0x4444;                //T1
+    IFS0 = 0x0000;                //T1
 }
 
 void beep(uc en)
 {
     if (en)
-	OC1R = 1000;
+        OC1R = 1000;
     else
-	OC1R = 0;
+        OC1R = 0;
 }
