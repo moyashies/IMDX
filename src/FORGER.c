@@ -158,23 +158,15 @@ int main(void)
 
     enable = 1;
 
-    st("starting...");
-    st32768("1,1=", atan2f((float) 1, (float) 1) * 180 / 3.14);
-    st("");
-    st32768("-1,1=", atan2f((float) -1, (float) 1) * 180 / 3.14);
-    st("");
-    st32768("1,-1=", atan2f((float) 1, (float) -1) * 180 / 3.14);
-    st("");
-    st32768("-1,-1=", atan2f((float) -1, (float) -1) * 180 / 3.14);
-    st("");
-    st32768("1,0=", atan2f((float) 1, (float) 0) * 180 / 3.14);
-    st("");
-    st32768("-1,0=", atan2f((float) -1, (float) 0) * 180 / 3.14);
-    st("");
-    st32768("0,1=", atan2f((float) 0, (float) 1) * 180 / 3.14);
-    st("");
-    st32768("0,-1=", atan2f((float) 0, (float) -1) * 180 / 3.14);
-    st("");
+    INFOF("starting...");
+    INFOF(" 1,  1 = %f", atan2f(1.0, 1.0) * 180 / 3.14);
+    INFOF("-1,  1 = %f", atan2f(-1.0, 1.0) * 180 / 3.14);
+    INFOF(" 1, -1 = %f", atan2f(1.0, -1.0) * 180 / 3.14);
+    INFOF("-1, -1 = %f", atan2f(-1.0, -1.0) * 180 / 3.14);
+    INFOF(" 1,  0 = %f", atan2f(1.0, 0) * 180 / 3.14);
+    INFOF("-1,  0 = %f", atan2f(-1.0, 0) * 180 / 3.14);
+    INFOF(" 0,  1 = %f", atan2f(0, 1.0) * 180 / 3.14);
+    INFOF(" 0, -1 = %f", atan2f(0, -1.0) * 180 / 3.14);
     leds = 0x0f;
     beep(0);
     while (i < 1000);
@@ -246,7 +238,7 @@ int main(void)
         i2cmem.tick(&i2cmem);
     }
 
-    st("started!");
+    INFOF("started!");
     while (1) {
         if (sswV) {
             motorEnable = 1;
@@ -255,7 +247,7 @@ int main(void)
         }
         if (pswF && pswV) {
             pswF = 0;
-            st("s");
+            INFOF("s");
         }
         leds ^= 0x04;
         if (dataOK) {

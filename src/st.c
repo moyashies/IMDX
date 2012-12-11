@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdarg.h>
+#include <xc.h>
+
 #include "../h/st.h"
 
 __inline__ static void transmit_char(const char c)
@@ -22,6 +26,18 @@ void st(const char* buf)
     transmit_str(buf);
     transmit_char('\r');
     transmit_char('\n');
+}
+
+void stf(const char* format, ...)
+{
+    char buf[1024];
+    va_list args;
+
+    va_start(args, format);
+    vsprintf(buf, format, args);
+    va_end(args);
+
+    st(buf);
 }
 
 void st128(const char* buf, char num)
