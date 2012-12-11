@@ -12,55 +12,55 @@ _FOSC(POSCMD_NONE & OSCIOFNC_ON & IOL1WAY_OFF & FCKSM_CSDCMD);
 _FOSCSEL(FNOSC_FRCPLL & PWMLOCK_OFF & IESO_OFF);
 _FGS(GWRP_OFF & GCP_OFF);
 
-#define P_PSW   (~PORTB&0x0080)
-#define P_SSW   (~PORTB&0x0100)
-#define P_BEEP  LATBbits.LATB9
-#define P_LED0  LATAbits.LATA2
-#define P_LED1  LATAbits.LATA3
-#define P_LED2  LATBbits.LATB0
-#define P_LED3  LATBbits.LATB1
+#define P_PSW (~PORTB & 0x0080)
+#define P_SSW (~PORTB & 0x0100)
+#define P_BEEP LATBbits.LATB9
+#define P_LED0 LATAbits.LATA2
+#define P_LED1 LATAbits.LATA3
+#define P_LED2 LATBbits.LATB0
+#define P_LED3 LATBbits.LATB1
 
-#define PWML  PDC3
-#define PWMR  OC2R
-#define PWMF  PDC1
-#define PWMB  PDC2
+#define PWML PDC3
+#define PWMR OC2R
+#define PWMF PDC1
+#define PWMB PDC2
 
 //35001
-#define PWMMAX   30000
-#define PWMLMAX  30000
-#define PWMRMAX  15000
-#define PWMFMAX  30000
-#define PWMBMAX  30000
+#define PWMMAX 30000
+#define PWMLMAX 30000
+#define PWMRMAX 15000
+#define PWMFMAX 30000
+#define PWMBMAX 30000
 
-#define PWMMIN   21000
-#define PWMLMIN  21200
-#define PWMRMIN  10600
-#define PWMFMIN  21200
-#define PWMBMIN  21200
+#define PWMMIN 21000
+#define PWMLMIN 21200
+#define PWMRMIN 10600
+#define PWMFMIN 21200
+#define PWMBMIN 21200
 
-#define PWMSTOP   18000
-#define PWMLSTOP  18000
-#define PWMRSTOP  9000
-#define PWMFSTOP  18000
-#define PWMBSTOP  18000
+#define PWMSTOP 18000
+#define PWMLSTOP 18000
+#define PWMRSTOP 9000
+#define PWMFSTOP 18000
+#define PWMBSTOP 18000
 
-#define PWMTHR   8
-#define PWMLTHR  8
-#define PWMRTHR  4
-#define PWMFTHR  8
-#define PWMBTHR  8
+#define PWMTHR 8
+#define PWMLTHR 8
+#define PWMRTHR 4
+#define PWMFTHR 8
+#define PWMBTHR 8
 
-#define PWMHANDLE   2
-#define PWMLHANDLE  2
-#define PWMRHANDLE  1
-#define PWMFHANDLE  2
-#define PWMBHANDLE  2
+#define PWMHANDLE 2
+#define PWMLHANDLE 2
+#define PWMRHANDLE 1
+#define PWMFHANDLE 2
+#define PWMBHANDLE 2
 
-#define GYROXYKP  10
-#define GYROXYKD  0
+#define GYROXYKP 10
+#define GYROXYKD 0
 
-#define ACCEXYKP  3
-#define ACCEXYKD  3
+#define ACCEXYKP 3
+#define ACCEXYKD 3
 
 void initOsc();
 void initPort();
