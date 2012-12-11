@@ -1,15 +1,16 @@
 #include "../h/st.h"
 
-#define TRANSMIT_CHAR(__c) do { \
-    while (U1STAbits.UTXBF); \
-    U1TXREG = __c; \
-} while (0)
+__inline__ static void transmit_char(const char c)
+{
+    while (U1STAbits.UTXBF);
+    U1TXREG = c;
+}
 
 void transmit_str(const char* buf)
 {
     for (; ; ++buf) {
         if (*buf != '\0') {
-            TRANSMIT_CHAR(*buf);
+            transmit_char(*buf);
         } else {
             break;
         }
@@ -19,69 +20,69 @@ void transmit_str(const char* buf)
 void st(const char* buf)
 {
     transmit_str(buf);
-    TRANSMIT_CHAR('\r');
-    TRANSMIT_CHAR('\n');
+    transmit_char('\r');
+    transmit_char('\n');
 }
 
 void st128(const char* buf, char num)
 {
     transmit_str(buf);
     if (num < 0) {
-        TRANSMIT_CHAR('-');
+        transmit_char('-');
         num = -num;
     } else {
-        TRANSMIT_CHAR(' ');
+        transmit_char(' ');
     }
     if (num == -128) { // XXX
-        TRANSMIT_CHAR('1');
-        TRANSMIT_CHAR('2');
-        TRANSMIT_CHAR('8');
+        transmit_char('1');
+        transmit_char('2');
+        transmit_char('8');
     } else {
-        TRANSMIT_CHAR('0' + num / 100 % 10);
-        TRANSMIT_CHAR('0' + num / 10 % 10);
-        TRANSMIT_CHAR('0' + num % 10);
+        transmit_char('0' + num / 100 % 10);
+        transmit_char('0' + num / 10 % 10);
+        transmit_char('0' + num % 10);
     }
 }
 
 void st255(const char* buf, unsigned char num)
 {
     transmit_str(buf);
-    TRANSMIT_CHAR('0' + num / 100 % 10);
-    TRANSMIT_CHAR('0' + num / 10 % 10);
-    TRANSMIT_CHAR('0' + num % 10);
+    transmit_char('0' + num / 100 % 10);
+    transmit_char('0' + num / 10 % 10);
+    transmit_char('0' + num % 10);
 }
 
 void st32768(const char* buf, int num)
 {
     transmit_str(buf);
     if (num < 0) {
-        TRANSMIT_CHAR('-');
+        transmit_char('-');
         num = -num;
     } else {
-        TRANSMIT_CHAR(' ');
+        transmit_char(' ');
     }
-    TRANSMIT_CHAR('0' + num / 10000 % 10);
-    TRANSMIT_CHAR('0' + num / 1000 % 10);
-    TRANSMIT_CHAR('0' + num / 100 % 10);
-    TRANSMIT_CHAR('0' + num / 10 % 10);
-    TRANSMIT_CHAR('0' + num % 10);
+    transmit_char('0' + num / 10000 % 10);
+    transmit_char('0' + num / 1000 % 10);
+    transmit_char('0' + num / 100 % 10);
+    transmit_char('0' + num / 10 % 10);
+    transmit_char('0' + num % 10);
 }
 
 void stff(const char* buf, unsigned char num)
 {
     transmit_str(buf);
-    TRANSMIT_CHAR('0');
-    TRANSMIT_CHAR('x');
+    transmit_char('0');
+    transmit_char('x');
     if (num > 0x9f) {
-        TRANSMIT_CHAR('W' + num / 16);
+        transmit_char('W' + num / 16);
     } else {
-        TRANSMIT_CHAR('0' + num / 16);
+        transmit_char('0' + num / 16);
     }
     if ((num & 0x0f) > 0x09) {
-        TRANSMIT_CHAR('W' + (num & 0xf));
+        transmit_char('W' + (num & 0xf));
     } else {
-        TRANSMIT_CHAR('0' + num % 16);
+        transmit_char('0' + num % 16);
     }
-    TRANSMIT_CHAR('\r');
-    TRANSMIT_CHAR('\n');
+    transmit_char('\r');
+    transmit_char('\n');
 }
