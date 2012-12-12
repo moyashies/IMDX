@@ -109,17 +109,17 @@ unsigned int ledCount;
 
 unsigned int motorEnable = 0;
 
-signed int angle[3];
-signed int acce[3];
-signed int gyro[3];
+int angle[3];
+int acce[3];
+int gyro[3];
 
-signed int angleBefore[3];
-signed int gyroBefore[3];
+int angleBefore[3];
+int gyroBefore[3];
 
-signed int gyroXPD;
-signed int angleXPD;
-signed int gyroYPD;
-signed int angleYPD;
+int gyroXPD;
+int angleXPD;
+int gyroYPD;
+int angleYPD;
 
 unsigned int pwml;
 unsigned int pwmr;
@@ -228,11 +228,7 @@ int main(void)
 
     INFOF("started!");
     while (1) {
-        if (sswV) {
-            motorEnable = 1;
-        } else {
-            motorEnable = 0;
-        }
+        motorEnable = sswV ? 1 : 0;
         if (pswF && pswV) {
             pswF = 0;
             INFOF("s");
@@ -309,14 +305,11 @@ int main(void)
         }
         gyro[2] = (signed int) ((signed char) rBuff[0]);
         angle[0] =
-            (signed int) (atan2f((float) (acce[1]), (float) (-acce[2])) / 3.14 *
-                  180);
+            (int)(atan2f((float)acce[1], (float)-acce[2]) / 3.14 * 180);
         angle[1] =
-            (signed int) (atan2f((float) (acce[0]), (float) (-acce[2])) / 3.14 *
-                  180);
+            (int)(atan2f((float)acce[0], (float)-acce[2]) / 3.14 * 180);
         angle[2] =
-            (signed int) (atan2f((float) (acce[0]), (float) (-acce[1])) / 3.14 *
-                  180);
+            (int)(atan2f((float)acce[0], (float)-acce[1]) / 3.14 * 180);
     }
     return 0;
 }
@@ -453,25 +446,18 @@ void _ISRFAST _T1Interrupt(void)
     } else
         sswC = 0;
 
-    //$B%P%i%s%9@)8f$r$3$3$KF~$l$k(B
-    //$BA0$K79$$$F$$$k"*A0$N=PNO(BUP
-    //$B:8$K79$$$F$$$k"*:8$N=PNO(BUP
-    //$B;~7W2s$j$G<+E>"*;~7W2s$j$N%m!<%?!<$N=PNO(BUP
-    //$B;~7W2s$j$G<+E>"*;~7W2s$j$N%m!<%?!<$N=PNO(BUP
-    //$B9bEY$r$G$-$k$@$1J]$D(B
+    // バランス制御をここに入れる
+    // 前に傾いている => 前の出力UP
+    // 左に傾いている => 左の出力UP
+    // 時計回りで自転 => 時計回りのローターの出力UP
+    // 時計回りで自転 => 時計回りのローターの出力UP
+    // 高度をできるだけ保つ
 
-    angleXPD =
-        (signed int) angle[1] * (signed int) ACCEXYKP + (signed int) (angleBefore[1] -
-                                              angle[1]) * (signed int) ACCEXYKD;
-    angleYPD =
-        (signed int) angle[0] * (signed int) ACCEXYKP + (signed int) (angleBefore[0] -
-                                              angle[0]) * (signed int) ACCEXYKD;
-    gyroXPD =
-        (signed int) gyro[1] * GYROXYKP + (signed int) (gyroBefore[1] -
-                                        gyro[1]) * (signed int) GYROXYKD;
-    gyroYPD =
-        (signed int) gyro[0] * GYROXYKP + (signed int) (gyroBefore[0] -
-                                        gyro[0]) * (signed int) GYROXYKD;
+    angleXPD = angle[1] * ACCEXYKP + (angleBefore[1] - angle[1]) * ACCEXYKD;
+    angleYPD = angle[0] * ACCEXYKP + (angleBefore[0] - angle[0]) * ACCEXYKD;
+
+    gyroXPD = gyro[1] * GYROXYKP + (gyroBefore[1] - gyro[1]) * GYROXYKD;
+    gyroYPD = gyro[0] * GYROXYKP + (gyroBefore[0] - gyro[0]) * GYROXYKD;
 
     if (motorEnable) {
         if (dataOK) {
@@ -483,21 +469,21 @@ void _ISRFAST _T1Interrupt(void)
                 pwmb = PWMSTOP;
             } else {
                 pwml =
-                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
-                    (signed int) (received[2] - 128) * (signed int) PWMHANDLE -
-                    (signed int) angleXPD - gyroXPD - (signed int) gyro[2] * (signed int) 32;
+                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    (received[2] - 128) * PWMHANDLE -
+                    angleXPD - gyroXPD - gyro[2] * 32;
                 pwmr =
-                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
-                    (signed int) (128 - received[2]) * (signed int) PWMHANDLE +
-                    (signed int) angleXPD + gyroXPD - (signed int) gyro[2] * (signed int) 32;
+                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    (128 - received[2]) * PWMHANDLE +
+                    angleXPD + gyroXPD - gyro[2] * 32;
                 pwmf =
-                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
-                    (signed int) (128 - received[3]) * (signed int) PWMHANDLE -
-                    (signed int) angleXPD - gyroXPD + (signed int) gyro[2] * (signed int) 32;
+                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    (128 - received[3]) * PWMHANDLE -
+                    angleXPD - gyroXPD + gyro[2] * 32;
                 pwmb =
-                    (signed int) PWMMIN + (signed int) (received[4] - 128) * (signed int) PWMTHR +
-                    (signed int) (received[3] - 128) * (signed int) PWMHANDLE +
-                    (signed int) angleXPD + gyroXPD + (signed int) gyro[2] * (signed int) 32;
+                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    (received[3] - 128) * PWMHANDLE +
+                    angleXPD + gyroXPD + gyro[2] * 32;
             }
         }
     } else {
@@ -519,15 +505,14 @@ void _ISRFAST _T1Interrupt(void)
     gyroBefore[0] = gyro[0];
     gyroBefore[1] = gyro[1];
     gyroBefore[2] = gyro[2];
-
 }
 
 void initOsc()
 {
-    //FOSC=140MHz
-    //PLLPRE=0
-    //PLLPOST=0
-    //PLLDIV=73
+    // FOSC = 140MHz
+    // PLLPRE = 0
+    // PLLPOST = 0
+    // PLLDIV = 73
     CLKDIV = 0x0000;
     PLLFBD = 73;
     OSCTUN = 0;
@@ -555,11 +540,11 @@ void initPort()
     CNPUB = 0x0180;
     CNPDB = 0;
 
-    RPINR18 = 0x0022;                //RX1=RPI34
+    RPINR18 = 0x0022; // RX1 = RPI34
 
-    RPOR0 = 0x0100;                //RP35=TX1
-    RPOR3 = 0x1000;                //RP41=OC1
-    RPOR4 = 0x0011;                //RP42=OC2
+    RPOR0 = 0x0100; // RP35 = TX1
+    RPOR3 = 0x1000; // RP41 = OC1
+    RPOR4 = 0x0011; // RP42 = OC2
 
     pswV = P_PSW;
     sswV = P_SSW;
@@ -581,7 +566,7 @@ void initPmd()
 
 void initPwm()
 {
-    //$B$^$@(B
+    // まだ
     PTCON2 = 0x0003;
     PTPER = 35001;
 
@@ -616,7 +601,7 @@ void stop()
 
 void initAd()
 {
-    //AD0,AD1$B$r%9%-%c%s(B
+    // AD0, AD1をスキャン
     AD1CON1 = 0x04ec;
     AD1CON2 = 0x0402;
     AD1CON3 = 0x9fff;
@@ -629,7 +614,7 @@ void initAd()
 
 void initUART()
 {
-    //9600bps
+    // 9600bps
     U1MODE = 0x8000;
     U1STA = 0x8400;
     U1BRG = 455;
@@ -666,9 +651,9 @@ void initInt()
     INTCON3 = 0x0000;
     INTCON4 = 0x0000;
 
-    IEC0 = 0x1808;                //T1
-    IPC0 = 0x4444;                //T1
-    IFS0 = 0x0000;                //T1
+    IEC0 = 0x1808; // T1
+    IPC0 = 0x4444; // T1
+    IFS0 = 0x0000; // T1
 }
 
 void beep(unsigned int wait)
