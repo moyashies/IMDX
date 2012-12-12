@@ -71,7 +71,7 @@ void initUART();
 void initT1();
 void initOC1();
 void initInt();
-void beep(unsigned char en);
+void beep(unsigned int wait);
 unsigned char readI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
 unsigned char sendI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
 void stop();
@@ -168,19 +168,7 @@ int main(void)
     INFOF(" 0,  1 = %f", atan2f(0, 1.0) * 180 / 3.14);
     INFOF(" 0, -1 = %f", atan2f(0, -1.0) * 180 / 3.14);
     leds = 0x0f;
-    beep(0);
-    while (i < 1000);
-    i = 0;
-    beep(1);
-    while (i < 500);
-    i = 0;
-    beep(0);
-    while (i < 50);
-    i = 0;
-    beep(1);
-    while (i < 50);
-    i = 0;
-    beep(0);
+    beep(500);
     stop();
     leds = 0x03;
 
@@ -683,10 +671,10 @@ void initInt()
     IFS0 = 0x0000;                //T1
 }
 
-void beep(unsigned char en)
+void beep(unsigned int wait)
 {
-    if (en)
-        OC1R = 1000;
-    else
-        OC1R = 0;
+    OC1R = 750;
+    while (i < wait);
+    i = 0;
+    OC1R = 0;
 }
