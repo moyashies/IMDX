@@ -113,8 +113,9 @@ int angle[3];
 int acce[3];
 int gyro[3];
 
-int angleBefore[3];
-int gyroBefore[3];
+int angleBefore[3] = {};
+int acceBefore[3] = {};
+int gyroBefore[3] = {};
 
 int gyroXPD;
 int angleXPD;
@@ -271,6 +272,14 @@ int main(void)
             i2cmem.tick(&i2cmem);
         }
         acce[2] = (signed int) ((signed char) rBuff[0]);
+
+        acce[0] = (int)(0.9 * acceBefore[0] + 0.1 * acce[0]);
+        acce[1] = (int)(0.9 * acceBefore[1] + 0.1 * acce[1]);
+        acce[2] = (int)(0.9 * acceBefore[2] + 0.1 * acce[2]);
+
+        acceBefore[0] = acce[0];
+        acceBefore[1] = acce[1];
+        acceBefore[2] = acce[2];
 
         // Read Data
         rData.devSel = GYRO;
