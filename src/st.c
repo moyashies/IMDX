@@ -24,7 +24,6 @@ void transmit_str(const char* buf)
 void st(const char* buf)
 {
     transmit_str(buf);
-    transmit_char('\r');
     transmit_char('\n');
 }
 
