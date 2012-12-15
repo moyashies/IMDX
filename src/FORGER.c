@@ -323,12 +323,12 @@ int main(void)
 
         stf("A,%d,%d,%d,"
             "%d,%d,%d,"
-            "%d,%d,%d",
+            "%d,%d,%d\n",
             acce[0], acce[1], acce[2],
             gyro[0], gyro[1], gyro[2],
             angle[0], angle[1], angle[2]);
 
-        stf("M,%d,%d,%d,%d",
+        stf("M,%d,%d,%d,%d\n",
             pwml, pwmr, pwmf, pwmb);
     }
     return 0;
