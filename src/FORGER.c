@@ -106,7 +106,7 @@ unsigned int sswF = 0;
 unsigned int sswV = 0;
 
 unsigned int leds = 0;
-unsigned int ledCount;
+unsigned int ledCount = 0;
 
 unsigned int motorEnable = 0;
 
@@ -118,10 +118,10 @@ int angleBefore[3] = {};
 int acceBefore[3] = {};
 int gyroBefore[3] = {};
 
-int gyroXPD;
 int angleXPD;
-int gyroYPD;
 int angleYPD;
+int gyroXPD;
+int gyroYPD;
 
 unsigned int pwml;
 unsigned int pwmr;
@@ -161,14 +161,6 @@ int main(void)
     enable = 1;
 
     INFOF("starting...");
-    INFOF(" 1,  1 = %f", atan2f(1.0, 1.0) * 180 / 3.14);
-    INFOF("-1,  1 = %f", atan2f(-1.0, 1.0) * 180 / 3.14);
-    INFOF(" 1, -1 = %f", atan2f(1.0, -1.0) * 180 / 3.14);
-    INFOF("-1, -1 = %f", atan2f(-1.0, -1.0) * 180 / 3.14);
-    INFOF(" 1,  0 = %f", atan2f(1.0, 0) * 180 / 3.14);
-    INFOF("-1,  0 = %f", atan2f(-1.0, 0) * 180 / 3.14);
-    INFOF(" 0,  1 = %f", atan2f(0, 1.0) * 180 / 3.14);
-    INFOF(" 0, -1 = %f", atan2f(0, -1.0) * 180 / 3.14);
     leds = 0x0f;
     beep(500);
     stop();
@@ -383,7 +375,7 @@ void _ISR _U1RXInterrupt(void)
     case 'h':
     case 'i':
         receivingIndex = c - 'a';
-        receivedIndex |= (unsigned int) 0x0001 << receivingIndex;
+        receivedIndex |= 0x0001 << receivingIndex;
         receiving[receivingIndex] = 0;
         break;
     case '0':
@@ -396,7 +388,7 @@ void _ISR _U1RXInterrupt(void)
     case '7':
     case '8':
     case '9':
-        if ((unsigned int) receiving[receivingIndex] * 10 + (c - '0') < 256) {
+        if ((unsigned int)receiving[receivingIndex] * 10 + (c - '0') < 256) {
             receiving[receivingIndex] =
                 receiving[receivingIndex] * 10 + (c - '0');
         } else {
@@ -424,47 +416,39 @@ void _ISRFAST _T1Interrupt(void)
         P_LED0 = 0;
         P_LED1 = 0;
     } else {
-        if (leds & 1)
-            P_LED0 = 1;
-        if (leds & 2)
-            P_LED1 = 1;
+        if (leds & 1) P_LED0 = 1;
+        if (leds & 2) P_LED1 = 1;
     }
     if (ledCount % 2) {
         P_LED2 = 0;
         P_LED3 = 0;
     } else {
-        if (leds & 4)
-            P_LED2 = 1;
-        if (leds & 8)
-            P_LED3 = 1;
+        if (leds & 4) P_LED2 = 1;
+        if (leds & 8) P_LED3 = 1;
     }
 
     if (i < 65535)
         i++;
 
     if (P_PSW != pswV) {
-        if ((++pswC) > 50) {
-            if (P_PSW)
-                pswV = 1;
-            else
-                pswV = 0;
+        if (++pswC > 50) {
+            pswV = P_PSW ? 1 : 0;
             pswF = 1;
             pswC = 0;
         }
-    } else
+    } else {
         pswC = 0;
+    }
 
     if (P_SSW != sswV) {
-        if ((++sswC) > 50) {
-            if (P_SSW)
-                sswV = 1;
-            else
-                sswV = 0;
+        if (++sswC > 50) {
+            sswV = P_SSW ? 1 : 0;
             sswF = 1;
             sswC = 0;
         }
-    } else
+    } else {
         sswC = 0;
+    }
 
     // バランス制御をここに入れる
     // 前に傾いている => 前の出力UP
@@ -489,19 +473,23 @@ void _ISRFAST _T1Interrupt(void)
                 pwmb = PWMSTOP;
             } else {
                 pwml =
-                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    PWMMIN +
+                    (received[4] - 128) * PWMTHR +
                     (received[2] - 128) * PWMHANDLE -
                     angleXPD - gyroXPD - gyro[2] * 32;
                 pwmr =
-                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    PWMMIN +
+                    (received[4] - 128) * PWMTHR +
                     (128 - received[2]) * PWMHANDLE +
                     angleXPD + gyroXPD - gyro[2] * 32;
                 pwmf =
-                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    PWMMIN +
+                    (received[4] - 128) * PWMTHR +
                     (128 - received[3]) * PWMHANDLE -
                     angleXPD - gyroXPD + gyro[2] * 32;
                 pwmb =
-                    PWMMIN + (received[4] - 128) * PWMTHR +
+                    PWMMIN +
+                    (received[4] - 128) * PWMTHR +
                     (received[3] - 128) * PWMHANDLE +
                     angleXPD + gyroXPD + gyro[2] * 32;
             }
