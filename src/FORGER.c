@@ -1,3 +1,4 @@
+#include <string.h>
 #include <xc.h>
 #include <math.h>
 #include "../h/i2cEmem.h"
@@ -276,10 +277,7 @@ int main(void)
         acce[0] = (int)(0.9 * acceBefore[0] + 0.1 * acce[0]);
         acce[1] = (int)(0.9 * acceBefore[1] + 0.1 * acce[1]);
         acce[2] = (int)(0.9 * acceBefore[2] + 0.1 * acce[2]);
-
-        acceBefore[0] = acce[0];
-        acceBefore[1] = acce[1];
-        acceBefore[2] = acce[2];
+        memcpy(acceBefore, acce, sizeof(acceBefore));
 
         // Read Data
         rData.devSel = GYRO;
@@ -302,6 +300,7 @@ int main(void)
             i2cmem.tick(&i2cmem);
         }
         gyro[1] = (signed int) ((signed char) rBuff[0]);
+        memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
         // Read Data
         rData.devSel = GYRO;
@@ -320,6 +319,7 @@ int main(void)
             (int)(atan2f((float)acce[0], (float)-acce[2]) / 3.14 * 180);
         angle[2] =
             (int)(atan2f((float)acce[0], (float)-acce[1]) / 3.14 * 180);
+        memcpy(angleBefore, angle, sizeof(angleBefore));
 
         stf("A,%d,%d,%d,"
             "%d,%d,%d,"
@@ -517,14 +517,6 @@ void _ISRFAST _T1Interrupt(void)
     PWMR = pwmr / 2;
     PWMF = pwmf;
     PWMB = pwmb;
-
-    angleBefore[0] = angle[0];
-    angleBefore[1] = angle[1];
-    angleBefore[2] = angle[2];
-
-    gyroBefore[0] = gyro[0];
-    gyroBefore[1] = gyro[1];
-    gyroBefore[2] = gyro[2];
 }
 
 void initOsc()
