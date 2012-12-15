@@ -313,12 +313,23 @@ int main(void)
             i2cmem.tick(&i2cmem);
         }
         gyro[2] = (signed int) ((signed char) rBuff[0]);
+
         angle[0] =
             (int)(atan2f((float)acce[1], (float)-acce[2]) / 3.14 * 180);
         angle[1] =
             (int)(atan2f((float)acce[0], (float)-acce[2]) / 3.14 * 180);
         angle[2] =
             (int)(atan2f((float)acce[0], (float)-acce[1]) / 3.14 * 180);
+
+        stf("A,%d,%d,%d,"
+            "%d,%d,%d,"
+            "%d,%d,%d",
+            acce[0], acce[1], acce[2],
+            gyro[0], gyro[1], gyro[2],
+            angle[0], angle[1], angle[2]);
+
+        stf("M,%d,%d,%d,%d",
+            pwml, pwmr, pwmf, pwmb);
     }
     return 0;
 }
