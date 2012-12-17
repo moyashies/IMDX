@@ -70,6 +70,7 @@ void initPwm();
 void initAd();
 void initUART();
 void initT1();
+void initT3();
 void initOC1();
 void initInt();
 void beep(unsigned int wait);
@@ -110,6 +111,9 @@ unsigned int ledCount = 0;
 
 unsigned int motorEnable = 0;
 
+unsigned int receivedNum = 0;
+unsigned char isTimeout = 1;
+
 int angle[3];
 int acce[3];
 int gyro[3];
@@ -136,6 +140,7 @@ int main(void)
     initAd();
     initUART();
     initT1();
+    initT3();
     initOC1();
     initInt();
     stop();
@@ -164,7 +169,6 @@ int main(void)
     leds = 0x0f;
     beep(500);
     stop();
-    leds = 0x03;
 
     // Initialise ACCE
     wData.devSel = ACCE;
@@ -222,6 +226,11 @@ int main(void)
 
     INFOF("started!");
     while (1) {
+        if (isTimeout) {
+            leds = 0x0f;
+            continue;
+        }
+
         motorEnable = sswV ? 1 : 0;
         if (pswF && pswV) {
             pswF = 0;
@@ -335,6 +344,8 @@ void _ISR _U1RXInterrupt(void)
 {
     IFS0bits.U1RXIF = 0;
     c = U1RXREG;
+
+    receivedNum++;
 
     leds = c & 0x0f;
     switch (c) {
@@ -457,13 +468,7 @@ void _ISRFAST _T1Interrupt(void)
     // 時計回りで自転 => 時計回りのローターの出力UP
     // 高度をできるだけ保つ
 
-    angleXPD = angle[1] * ACCEXYKP + (angleBefore[1] - angle[1]) * ACCEXYKD;
-    angleYPD = angle[0] * ACCEXYKP + (angleBefore[0] - angle[0]) * ACCEXYKD;
-
-    gyroXPD = gyro[1] * GYROXYKP + (gyroBefore[1] - gyro[1]) * GYROXYKD;
-    gyroYPD = gyro[0] * GYROXYKP + (gyroBefore[0] - gyro[0]) * GYROXYKD;
-
-    if (motorEnable) {
+    if (motorEnable && !isTimeout) {
         if (dataOK) {
             dataOK = 0;
             if (received[5] == 0) {
@@ -472,6 +477,12 @@ void _ISRFAST _T1Interrupt(void)
                 pwmf = PWMSTOP;
                 pwmb = PWMSTOP;
             } else {
+                angleXPD = angle[1] * ACCEXYKP + (angleBefore[1] - angle[1]) * ACCEXYKD;
+                angleYPD = angle[0] * ACCEXYKP + (angleBefore[0] - angle[0]) * ACCEXYKD;
+
+                gyroXPD = gyro[1] * GYROXYKP + (gyroBefore[1] - gyro[1]) * GYROXYKD;
+                gyroYPD = gyro[0] * GYROXYKP + (gyroBefore[0] - gyro[0]) * GYROXYKD;
+
                 pwml =
                     PWMMIN +
                     (received[4] - 128) * PWMTHR +
@@ -505,6 +516,14 @@ void _ISRFAST _T1Interrupt(void)
     PWMR = pwmr / 2;
     PWMF = pwmf;
     PWMB = pwmb;
+}
+
+void _ISRFAST _T3Interrupt(void)
+{
+    IFS0bits.T3IF = 0;
+
+    isTimeout = receivedNum == 0 ? 1 : 0;
+    receivedNum = 0;
 }
 
 void initOsc()
@@ -630,7 +649,8 @@ void initT1()
 
 void initT3()
 {
-    T3CON = 0x0010;
+    T3CON = 0x0030;
+    PR3 = 30000;
     TMR3 = 0;
     T3CON |= 0x8000;
 }
@@ -651,7 +671,7 @@ void initInt()
     INTCON3 = 0x0000;
     INTCON4 = 0x0000;
 
-    IEC0 = 0x1808; // T1
+    IEC0 = 0x1908; // T1
     IPC0 = 0x4444; // T1
     IFS0 = 0x0000; // T1
 }
