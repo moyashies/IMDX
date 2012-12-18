@@ -2,7 +2,7 @@
 #define __ST_H
 
 #define _LOG(format, ...) \
-    stf(format "at %s line %d\n", ##__VA_ARGS__, __FILE__, __LINE__)
+    stf(format " at %s line %d\n", ##__VA_ARGS__, __FILE__, __LINE__)
 #define INFOF(format, ...) _LOG("[INFO] " format, ##__VA_ARGS__)
 #define DEBUGF
 #ifdef IMDX_DEBUG
