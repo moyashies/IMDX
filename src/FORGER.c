@@ -84,8 +84,6 @@ I2CEMEM_DATA wData;
 I2CEMEM_DATA rData;
 
 unsigned int wBuff[10], rBuff[10];
-unsigned int enable;
-
 
 unsigned int i = 0;
 
@@ -162,8 +160,6 @@ int main(void)
     rData.n = 1;
     rData.addr = 0x29;
     rData.devSel = 0x00;
-
-    enable = 1;
 
     INFOF("starting...");
     leds = 0x0f;
