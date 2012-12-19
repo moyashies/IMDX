@@ -232,38 +232,20 @@ int main(void)
             leds ^= 0x08;
             leds = received[0];
         }
-        // Read Data
-        rData.devSel = ACCE;
-        rData.addr = 0x29;
-        rData.n = 1;
-        i2cmem.oData = &rData;
-        i2cmem.cmd = I2C_READ;
-        while (i2cmem.cmd != I2C_IDLE) {
-            i2cmem.tick(&i2cmem);
-        }
-        acce[0] = (signed int) ((signed char) rBuff[0]);
 
         // Read Data
         rData.devSel = ACCE;
-        rData.addr = 0x2b;
-        rData.n = 1;
+        rData.addr = 0xa9;
+        rData.n = 5;
         i2cmem.oData = &rData;
         i2cmem.cmd = I2C_READ;
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        acce[1] = (signed int) ((signed char) rBuff[0]);
 
-        // Read Data
-        rData.devSel = ACCE;
-        rData.addr = 0x2d;
-        rData.n = 1;
-        i2cmem.oData = &rData;
-        i2cmem.cmd = I2C_READ;
-        while (i2cmem.cmd != I2C_IDLE) {
-            i2cmem.tick(&i2cmem);
-        }
-        acce[2] = (signed int) ((signed char) rBuff[0]);
+        acce[0] = (char)rBuff[0];
+        acce[1] = (char)rBuff[2];
+        acce[2] = (char)rBuff[4];
 
         acce[0] = (int)(0.9 * acceBefore[0] + 0.1 * acce[0]);
         acce[1] = (int)(0.9 * acceBefore[1] + 0.1 * acce[1]);
@@ -272,37 +254,18 @@ int main(void)
 
         // Read Data
         rData.devSel = GYRO;
-        rData.addr = 0x29;
-        rData.n = 1;
+        rData.addr = 0xa9;
+        rData.n = 5;
         i2cmem.oData = &rData;
         i2cmem.cmd = I2C_READ;
         while (i2cmem.cmd != I2C_IDLE) {
             i2cmem.tick(&i2cmem);
         }
-        gyro[0] = (signed int) ((signed char) rBuff[0]);
 
-        // Read Data
-        rData.devSel = GYRO;
-        rData.addr = 0x2b;
-        rData.n = 1;
-        i2cmem.oData = &rData;
-        i2cmem.cmd = I2C_READ;
-        while (i2cmem.cmd != I2C_IDLE) {
-            i2cmem.tick(&i2cmem);
-        }
-        gyro[1] = (signed int) ((signed char) rBuff[0]);
+        gyro[0] = (char)rBuff[0];
+        gyro[1] = (char)rBuff[2];
+        gyro[2] = (char)rBuff[4];
         memcpy(gyroBefore, gyro, sizeof(gyroBefore));
-
-        // Read Data
-        rData.devSel = GYRO;
-        rData.addr = 0x2d;
-        rData.n = 1;
-        i2cmem.oData = &rData;
-        i2cmem.cmd = I2C_READ;
-        while (i2cmem.cmd != I2C_IDLE) {
-            i2cmem.tick(&i2cmem);
-        }
-        gyro[2] = (signed int) ((signed char) rBuff[0]);
 
         angle[0] =
             (int)(atan2f((float)acce[1], (float)-acce[2]) / 3.14 * 180);
