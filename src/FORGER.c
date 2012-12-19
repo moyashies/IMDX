@@ -119,8 +119,7 @@ int angleBefore[3] = {};
 int acceBefore[3] = {};
 int gyroBefore[3] = {};
 
-int angleXPD, angleYPD;
-int gyroXPD, gyroYPD;
+int angleXPD, angleYPD, gyroXPD, gyroYPD;
 
 unsigned int pwml, pwmr, pwmf, pwmb;
 
@@ -479,7 +478,7 @@ void _ISRFAST _T3Interrupt(void)
 {
     IFS0bits.T3IF = 0;
 
-    isTimeout = receivedNum == 0 ? 1 : 0;
+    isTimeout = receivedNum < 1 ? 1 : 0;
     receivedNum = 0;
 }
 
