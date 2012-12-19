@@ -3,6 +3,7 @@
 #include <math.h>
 #include "../h/i2cEmem.h"
 
+#include "../h/control.h"
 #include "../h/st.h"
 
 _FICD(ICS_PGD3 & JTAGEN_OFF);
@@ -112,23 +113,16 @@ unsigned int motorEnable = 0;
 unsigned int receivedNum = 0;
 unsigned char isTimeout = 1;
 
-int angle[3];
-int acce[3];
-int gyro[3];
+int angle[3], acce[3], gyro[3];
 
 int angleBefore[3] = {};
 int acceBefore[3] = {};
 int gyroBefore[3] = {};
 
-int angleXPD;
-int angleYPD;
-int gyroXPD;
-int gyroYPD;
+int angleXPD, angleYPD;
+int gyroXPD, gyroYPD;
 
-unsigned int pwml;
-unsigned int pwmr;
-unsigned int pwmf;
-unsigned int pwmb;
+unsigned int pwml, pwmr, pwmf, pwmb;
 
 int main(void)
 {
@@ -473,32 +467,16 @@ void _ISRFAST _T1Interrupt(void)
                 pwmf = PWMSTOP;
                 pwmb = PWMSTOP;
             } else {
-                angleXPD = angle[1] * ACCEXYKP + (angleBefore[1] - angle[1]) * ACCEXYKD;
-                angleYPD = angle[0] * ACCEXYKP + (angleBefore[0] - angle[0]) * ACCEXYKD;
+                angleXPD = _my_angleXPD(angle, angleBefore);
+                angleYPD = _my_angleYPD(angle, angleBefore);
 
-                gyroXPD = gyro[1] * GYROXYKP + (gyroBefore[1] - gyro[1]) * GYROXYKD;
-                gyroYPD = gyro[0] * GYROXYKP + (gyroBefore[0] - gyro[0]) * GYROXYKD;
+                gyroXPD = _my_gyroXPD(gyro, gyroBefore);
+                gyroYPD = _my_gyroYPD(gyro, gyroBefore);
 
-                pwml =
-                    PWMMIN +
-                    (received[4] - 128) * PWMTHR +
-                    (received[2] - 128) * PWMHANDLE -
-                    angleXPD - gyroXPD - gyro[2] * 32;
-                pwmr =
-                    PWMMIN +
-                    (received[4] - 128) * PWMTHR +
-                    (128 - received[2]) * PWMHANDLE +
-                    angleXPD + gyroXPD - gyro[2] * 32;
-                pwmf =
-                    PWMMIN +
-                    (received[4] - 128) * PWMTHR +
-                    (128 - received[3]) * PWMHANDLE -
-                    angleXPD - gyroXPD + gyro[2] * 32;
-                pwmb =
-                    PWMMIN +
-                    (received[4] - 128) * PWMTHR +
-                    (received[3] - 128) * PWMHANDLE +
-                    angleXPD + gyroXPD + gyro[2] * 32;
+                pwml = _my_pwml(received, gyro, angleXPD, gyroXPD);
+                pwmr = _my_pwmr(received, gyro, angleXPD, gyroXPD);
+                pwmf = _my_pwmf(received, gyro, angleYPD, gyroYPD);
+                pwmb = _my_pwmb(received, gyro, angleYPD, gyroYPD);
             }
         }
     } else {
