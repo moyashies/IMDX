@@ -229,12 +229,9 @@ int main(void)
         gyro[2] = (char)rBuff[4];
         memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
-        angle[0] =
-            (int)(atan2f((float)acce[1], (float)-acce[2]) / 3.14 * 180);
-        angle[1] =
-            (int)(atan2f((float)acce[0], (float)-acce[2]) / 3.14 * 180);
-        angle[2] =
-            (int)(atan2f((float)acce[0], (float)-acce[1]) / 3.14 * 180);
+        angle[0] = angleX(acce);
+        angle[1] = angleY(acce);
+        angle[2] = angleZ(acce);
         memcpy(angleBefore, angle, sizeof(angleBefore));
 
         stf("A,%d,%d,%d,"
