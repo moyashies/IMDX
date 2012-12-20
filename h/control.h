@@ -16,6 +16,8 @@
 #define PWMF_MIN 21200
 #define PWMB_MIN 21200
 
+#define PWM_MIN_LIMIT 20000
+
 #define PWM_STOP 18000
 #define PWML_STOP 18000
 #define PWMR_STOP 9000
