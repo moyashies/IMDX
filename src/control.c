@@ -19,28 +19,28 @@ int angleZ(const int* acce)
     return (int)(atan2f((float)acce[0], (float)-acce[1]) / M_PI * 180);
 }
 
-int _my_angleXPD(const int* angle, const int* angleBefore)
+int _my_angleXPD(const int* angle, const int* angleBefore, int kp, int kd)
 {
-    return angle[1] * ACCE_KP
-        + (angleBefore[1] - angle[1]) * ACCE_KD;
+    return angle[1] * kp
+        + (angleBefore[1] - angle[1]) * kd;
 }
 
-int _my_angleYPD(const int* angle, const int* angleBefore)
+int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd)
 {
-    return angle[0] * ACCE_KP
-        + (angleBefore[0] - angle[0]) * ACCE_KD;
+    return angle[0] * kp
+        + (angleBefore[0] - angle[0]) * kd;
 }
 
-int _my_gyroXPD(const int* gyro, const int* gyroBefore)
+int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd)
 {
-    return gyro[1] * GYRO_KP
-        + (gyroBefore[1] - gyro[1]) * GYRO_KD;
+    return gyro[1] * kp
+        + (gyroBefore[1] - gyro[1]) * kd;
 }
 
-int _my_gyroYPD(const int* gyro, const int* gyroBefore)
+int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd)
 {
-    return gyro[0] * GYRO_KP
-        + (gyroBefore[0] - gyro[0]) * GYRO_KD;
+    return gyro[0] * kp
+        + (gyroBefore[0] - gyro[0]) * kd;
 }
 
 unsigned int _my_pwml(const unsigned int* received, const int* gyro,

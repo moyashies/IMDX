@@ -272,10 +272,11 @@ void _ISR _U1RXInterrupt(void)
         receiving[4] = 0;
         receiving[5] = 0;
         receiving[6] = 0;
-        receiving[7] = 0;
-        receiving[8] = 0;
-        receiving[9] = 0;
-        receiving[10] = 0;
+        // ;(
+        //receiving[7] = 0;
+        //receiving[8] = 0;
+        //receiving[9] = 0;
+        //receiving[10] = 0;
         receiving[11] = 0;
         receiving[12] = 0;
         receiving[13] = 0;
@@ -409,11 +410,15 @@ void _ISRFAST _T1Interrupt(void)
                 pwmf = PWM_STOP;
                 pwmb = PWM_STOP;
             } else {
-                angleXPD = _my_angleXPD(angle, angleBefore);
-                angleYPD = _my_angleYPD(angle, angleBefore);
+                angleXPD = _my_angleXPD(angle, angleBefore,
+                        received[7], received[8]);
+                angleYPD = _my_angleYPD(angle, angleBefore,
+                        received[7], received[8]);
 
-                gyroXPD = _my_gyroXPD(gyro, gyroBefore);
-                gyroYPD = _my_gyroYPD(gyro, gyroBefore);
+                gyroXPD = _my_gyroXPD(gyro, gyroBefore,
+                        received[9], received[10]);
+                gyroYPD = _my_gyroYPD(gyro, gyroBefore,
+                        received[9], received[10]);
 
                 pwml = _my_pwml(received, gyro, angleXPD, gyroXPD);
                 pwmr = _my_pwmr(received, gyro, angleXPD, gyroXPD);

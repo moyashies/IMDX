@@ -49,9 +49,9 @@ unsigned int _my_pwmr(const unsigned int* received, const int* gyro, int angleX,
 unsigned int _my_pwmf(const unsigned int* received, const int* gyro, int angleX, int gyroX);
 unsigned int _my_pwmb(const unsigned int* received, const int* gyro, int angleX, int gyroX);
 
-int _my_angleXPD(const int* angle, const int* angleBefore, int angleXPD, int gyroXPD);
-int _my_angleYPD(const int* angle, const int* angleBefore, int angleXPD, int gyroXPD);
-int _my_gyroXPD(const int* gyro, const int* gyroBefore, int angleXPD, int gyroXPD);
-int _my_gyroYPD(const int* gyro, const int* gyroBefore, int angleXPD, int gyroXPD);
+int _my_angleXPD(const int* angle, const int* angleBefore, int kp, int kd);
+int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd);
+int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd);
+int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd);
 
 #endif /* __CONTROL_H */
