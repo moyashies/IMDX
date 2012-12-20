@@ -337,12 +337,9 @@ void _ISR _U1RXInterrupt(void)
         if ((unsigned int)receiving[receivingIndex] * 10 + (c - '0') < 256) {
             receiving[receivingIndex] =
                 receiving[receivingIndex] * 10 + (c - '0');
-        } else {
-            receivedIndex |= 0x8000;
         }
         break;
     default:
-        receivedIndex |= 0x8000;
         break;
     }
 }
@@ -407,10 +404,10 @@ void _ISRFAST _T1Interrupt(void)
         if (dataOK) {
             dataOK = 0;
             if (received[5] == 0) {
-                pwml = PWMSTOP;
-                pwmr = PWMSTOP;
-                pwmf = PWMSTOP;
-                pwmb = PWMSTOP;
+                pwml = PWM_STOP;
+                pwmr = PWM_STOP;
+                pwmf = PWM_STOP;
+                pwmb = PWM_STOP;
             } else {
                 angleXPD = _my_angleXPD(angle, angleBefore);
                 angleYPD = _my_angleYPD(angle, angleBefore);
@@ -425,10 +422,10 @@ void _ISRFAST _T1Interrupt(void)
             }
         }
     } else {
-        pwml = PWMSTOP;
-        pwmr = PWMSTOP;
-        pwmf = PWMSTOP;
-        pwmb = PWMSTOP;
+        pwml = PWM_STOP;
+        pwmr = PWM_STOP;
+        pwmf = PWM_STOP;
+        pwmb = PWM_STOP;
     }
 
     PWML = pwml;
@@ -531,10 +528,10 @@ void initPwm()
 
 void stop()
 {
-    PWML = PWMLSTOP;
-    PWMR = PWMRSTOP;
-    PWMF = PWMFSTOP;
-    PWMB = PWMBSTOP;
+    PWML = PWM_STOP;
+    PWMR = PWM_STOP;
+    PWMF = PWM_STOP;
+    PWMB = PWM_STOP;
 }
 
 void initAd()
@@ -590,7 +587,7 @@ void initInt()
     INTCON3 = 0x0000;
     INTCON4 = 0x0000;
 
-    IEC0 = 0x1908; // T1
+    IEC0 = 0x1908; // U1TXIE, U1RXIE, T3IE, T1IE
     IPC0 = 0x4444; // T1
     IFS0 = 0x0000; // T1
 }
