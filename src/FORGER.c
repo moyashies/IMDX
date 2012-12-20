@@ -209,9 +209,9 @@ int main(void)
         acce[1] = (char)rBuff[2];
         acce[2] = (char)rBuff[4];
 
-        acce[0] = (int)(0.9 * acceBefore[0] + 0.1 * acce[0]);
-        acce[1] = (int)(0.9 * acceBefore[1] + 0.1 * acce[1]);
-        acce[2] = (int)(0.9 * acceBefore[2] + 0.1 * acce[2]);
+        acce[0] = (int)(0.95 * acceBefore[0] + 0.05 * acce[0]);
+        acce[1] = (int)(0.95 * acceBefore[1] + 0.05 * acce[1]);
+        acce[2] = (int)(0.95 * acceBefore[2] + 0.05 * acce[2]);
         memcpy(acceBefore, acce, sizeof(acceBefore));
 
         // Read Data
