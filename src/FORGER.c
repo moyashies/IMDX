@@ -1,6 +1,4 @@
-#include <string.h>
 #include <xc.h>
-#include <math.h>
 #include "../h/i2cEmem.h"
 
 #include "../h/control.h"
@@ -85,6 +83,44 @@ int gyroBefore[3] = {};
 int angleXPD, angleYPD, gyroXPD, gyroYPD;
 
 unsigned int pwml, pwmr, pwmf, pwmb;
+
+unsigned char bufNum = 0;
+unsigned char bufIndex = 0;
+unsigned int buf[128];
+
+unsigned char getChar()
+{
+    unsigned char c;
+    c = buf[bufIndex % 128];
+    bufIndex++;
+    bufNum--;
+    return c;
+}
+
+void setChar(unsigned char c)
+{
+    while (num == 128);
+
+    buf[(bufIndex + bufNum) % 128] = c;
+    num++;
+    if (!IEC0bits.U1TXIE) {
+        U1TXREG = getChar();
+        IFS0bits.U1TXIF = 0;
+        IEC0bits.U1TXIE = 1;
+    }
+}
+
+void transmitStr(const char* buf)
+{
+    for (; ; ++buf) {
+        if (*buf != '\0') {
+            setChar(*buf);
+        } else {
+            break;
+        }
+    }
+}
+
 
 int main(void)
 {
@@ -345,6 +381,12 @@ void _ISR _U1RXInterrupt(void)
 void _ISR _U1TXInterrupt(void)
 {
     IFS0bits.U1TXIF = 0;
+
+    if (bufNum > 0) {
+        U1TXREG = getChar();
+    } else {
+        IEC0bits.U1TXIE = 0;
+    }
 }
 
 void _ISRFAST _T1Interrupt(void)
@@ -591,6 +633,7 @@ void initInt()
 
     IEC0 = 0x1908; // U1TXIE, U1RXIE, T3IE, T1IE
     IPC0 = 0x4444; // T1
+    IPC3 = 0x4443; // T1
     IFS0 = 0x0000; // T1
 }
 
