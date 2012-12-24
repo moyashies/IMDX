@@ -1,8 +1,11 @@
 #ifndef __PWM_H
 #define __PWM_H
 
+#define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
+#define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
+
 #define PWM_BASE 21000
-#define PWM_MAX 30000
+#define PWM_MAX 28000
 #define PWM_MIN 20000
 #define PWM_STOP 18000
 

@@ -39,7 +39,7 @@ unsigned int PWMLeft(const unsigned int* received, const int* gyro,
         pwm += (received[1] - 128) * PWM_ROTATE;
     }
 
-    return pwm > PWM_MIN ? pwm : PWM_MIN;
+    return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
 unsigned int PWMRight(const unsigned int* received, const int* gyro,
@@ -57,7 +57,7 @@ unsigned int PWMRight(const unsigned int* received, const int* gyro,
         pwm += (received[1] - 128) * PWM_ROTATE;
     }
 
-    return pwm > PWM_MIN ? pwm : PWM_MIN;
+    return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
 unsigned int PWMFront(const unsigned int* received, const int* gyro,
@@ -75,7 +75,7 @@ unsigned int PWMFront(const unsigned int* received, const int* gyro,
         pwm += (128 - received[1]) * PWM_ROTATE;
     }
 
-    return pwm > PWM_MIN ? pwm : PWM_MIN;
+    return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
 unsigned int PWMBack(const unsigned int* received, const int* gyro,
@@ -93,5 +93,5 @@ unsigned int PWMBack(const unsigned int* received, const int* gyro,
         pwm += (128 - received[1]) * PWM_ROTATE;
     }
 
-    return pwm > PWM_MIN ? pwm : PWM_MIN;
+    return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
