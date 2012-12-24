@@ -2,6 +2,7 @@
 #include <xc.h>
 #include "../h/i2cEmem.h"
 
+#include "../h/protocol.h"
 #include "../h/pwm.h"
 #include "../h/sensor.h"
 #include "../h/st.h"
@@ -53,10 +54,6 @@ unsigned int i = 0;
 
 unsigned int count = 0;
 
-unsigned int c = 0;
-unsigned int receivedIndex = 0;
-unsigned int receivingIndex = 0;
-unsigned int receiving[15];
 unsigned int received[15];
 unsigned int dataOK = 0;
 
@@ -292,56 +289,26 @@ void _ISR _DefaultInterrupt(void)
 
 void _ISR _U1RXInterrupt(void)
 {
+    unsigned int c;
+
     IFS0bits.U1RXIF = 0;
     c = U1RXREG;
 
     receivedNum++;
 
     leds = c & 0x0f;
+
     switch (c) {
     case 'q':
-        receiving[0] = 0;
-        receiving[1] = 0;
-        receiving[2] = 0;
-        receiving[3] = 0;
-        receiving[4] = 0;
-        receiving[5] = 0;
-        receiving[6] = 0;
-        // ;(
-        //receiving[7] = 0;
-        //receiving[8] = 0;
-        //receiving[9] = 0;
-        //receiving[10] = 0;
-        receiving[11] = 0;
-        receiving[12] = 0;
-        receiving[13] = 0;
-        receiving[14] = 0;
-        receivedIndex = 0;
-        receivingIndex = 0;
+        clearReceivingBuffer();
         break;
     case 'r':
-        /* required *strict* [a-f] parameters */
-        if (receivedIndex & 0x000f) {
-            received[0] = receiving[0];
-            received[1] = receiving[1];
-            received[2] = receiving[2];
-            received[3] = receiving[3];
-            received[4] = receiving[4];
-            received[5] = receiving[5];
-            received[6] = receiving[6];
-            received[7] = receiving[7];
-            received[8] = receiving[8];
-            received[9] = receiving[9];
-            received[10] = receiving[10];
-            received[11] = receiving[11];
-            received[12] = receiving[12];
-            received[13] = receiving[13];
-            received[14] = receiving[14];
+        if (doneReceiving(received)) {
             dataOK = 1;
         }
         break;
     case 'a':
-    case 'b':
+    case 'b': /* rotate */
     case 'c': /* handle x */
     case 'd': /* handle y */
     case 'e': /* throttle */
@@ -356,9 +323,7 @@ void _ISR _U1RXInterrupt(void)
     case 'n':
     case 'o':
     case 'p':
-        receivingIndex = c - 'a';
-        receivedIndex |= 0x0001 << receivingIndex;
-        receiving[receivingIndex] = 0;
+        prepareReceive(c);
         break;
     case '0':
     case '1':
@@ -370,12 +335,7 @@ void _ISR _U1RXInterrupt(void)
     case '7':
     case '8':
     case '9':
-        if ((unsigned int)receiving[receivingIndex] * 10 + (c - '0') < 256) {
-            receiving[receivingIndex] =
-                receiving[receivingIndex] * 10 + (c - '0');
-        }
-        break;
-    default:
+        receiveNum(c);
         break;
     }
 }
