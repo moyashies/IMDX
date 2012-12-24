@@ -4,6 +4,17 @@
 
 #include "../h/st.h"
 
+void transmitStr(const char* buf)
+{
+    for (; ; ++buf) {
+        if (*buf != '\0') {
+            setChar(*buf);
+        } else {
+            break;
+        }
+    }
+}
+
 void st(const char* buf)
 {
     transmitStr(buf);

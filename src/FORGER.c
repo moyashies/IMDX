@@ -24,7 +24,7 @@ _FGS(GWRP_OFF & GCP_OFF);
 #define P_LED3 LATBbits.LATB1
 
 #define PWML PDC3
-#define PWMR OC2R
+#define PWMR OC2R /* differ from other modules, you have to divide by 2. */
 #define PWMF PDC1
 #define PWMB PDC2
 
@@ -38,10 +38,11 @@ void initT1();
 void initT3();
 void initOC1();
 void initInt();
+void stopMotor();
 void beep(unsigned int wait);
-unsigned char readI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
-unsigned char sendI2C(unsigned char device, unsigned char address, unsigned char * dataP, unsigned char length);
-void stop();
+
+unsigned char getChar(void);
+void setChar(unsigned char c);
 
 // Instantiate Drive and Data objects
 I2CEMEM_DRV i2cmem = I2CSEMEM_DRV_DEFAULTS;
@@ -51,8 +52,6 @@ I2CEMEM_DATA rData;
 unsigned int wBuff[10], rBuff[10];
 
 unsigned int i = 0;
-
-unsigned int count = 0;
 
 unsigned int received[15];
 unsigned int dataOK = 0;
@@ -109,18 +108,6 @@ void setChar(unsigned char c)
     }
 }
 
-void transmitStr(const char* buf)
-{
-    for (; ; ++buf) {
-        if (*buf != '\0') {
-            setChar(*buf);
-        } else {
-            break;
-        }
-    }
-}
-
-
 int main(void)
 {
     initOsc();
@@ -132,7 +119,7 @@ int main(void)
     initT3();
     initOC1();
     initInt();
-    stop();
+    stopMotor();
 
     i2cmem.init(&i2cmem);
 
@@ -155,7 +142,7 @@ int main(void)
     INFOF("starting...");
     leds = 0x0f;
     beep(500);
-    stop();
+    stopMotor();
 
     // Initialise ACCE
     wData.devSel = ACCE;
@@ -532,14 +519,6 @@ void initPwm()
     OC2CON2 = 0x001f;
 }
 
-void stop()
-{
-    PWML = PWM_STOP;
-    PWMR = PWM_STOP;
-    PWMF = PWM_STOP;
-    PWMB = PWM_STOP;
-}
-
 void initAd()
 {
     // AD0, AD1をスキャン
@@ -597,6 +576,14 @@ void initInt()
     IPC0 = 0x4444; // T1
     IPC3 = 0x4443; // T1
     IFS0 = 0x0000; // T1
+}
+
+void stopMotor()
+{
+    PWML = PWM_STOP;
+    PWMR = PWM_STOP / 2;
+    PWMF = PWM_STOP;
+    PWMB = PWM_STOP;
 }
 
 void beep(unsigned int wait)
