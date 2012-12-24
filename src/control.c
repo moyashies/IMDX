@@ -46,43 +46,71 @@ int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd)
 unsigned int _my_pwml(const unsigned int* received, const int* gyro,
         int angleXPD, int gyroXPD)
 {
-    return LIMIT_PWM(
+    int pwm =
         PWM_MIN
         + (received[4] - 128) * PWM_THROTTLE        // speed
         + (received[3] - 128) * PWM_HANDLE          // move_x
-            - angleXPD - gyroXPD - gyro[2] * 16
-    );
+            - angleXPD - gyroXPD;
+
+    if (received[1] == 128) {
+        pwm -= gyro[2] * 16;
+    } else {
+        pwm += (received[1] - 128) * PWM_ROTATE;    // rotate
+    }
+
+    return LIMIT_PWM(pwm);
 }
 
 unsigned int _my_pwmr(const unsigned int* received, const int* gyro,
         int angleXPD, int gyroXPD)
 {
-    return LIMIT_PWM(
+    int pwm =
         PWM_MIN
         + (received[4] - 128) * PWM_THROTTLE        // speed
         + (128 - received[3]) * PWM_HANDLE          // move_x
-            + angleXPD + gyroXPD - gyro[2] * 16
-    );
+            + angleXPD + gyroXPD;
+
+    if (received[1] == 128) {
+        pwm -= gyro[2] * 16;
+    } else {
+        pwm += (received[1] - 128) * PWM_ROTATE;    // rotate
+    }
+
+    return LIMIT_PWM(pwm);
 }
 
 unsigned int _my_pwmf(const unsigned int* received, const int* gyro,
         int angleYPD, int gyroYPD)
 {
-    return LIMIT_PWM(
+    int pwm =
         PWM_MIN
         + (received[4] - 128) * PWM_THROTTLE        // speed
         + (128 - received[2]) * PWM_HANDLE          // move_y
-            - angleYPD + gyroYPD + gyro[2] * 16
-    );
+            - angleYPD + gyroYPD;
+
+    if (received[1] == 128) {
+        pwm += gyro[2] * 16;
+    } else {
+        pwm += (128 - received[1]) * PWM_ROTATE;    // rotate
+    }
+
+    return LIMIT_PWM(pwm);
 }
 
 unsigned int _my_pwmb(const unsigned int* received, const int* gyro,
         int angleYPD, int gyroYPD)
 {
-    return LIMIT_PWM(
+    int pwm =
         PWM_MIN
         + (received[4] - 128) * PWM_THROTTLE        // speed
         + (received[2] - 128) * PWM_HANDLE          // move_y
-            + angleYPD - gyroYPD + gyro[2] * 16
-    );
+            + angleYPD - gyroYPD;
+
+    if (received[1] == 128) {
+        pwm += gyro[2] * 16;
+    } else {
+        pwm += (128 - received[1]) * PWM_ROTATE;    // rotate
+    }
+
+    return LIMIT_PWM(pwm);
 }

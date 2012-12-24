@@ -36,6 +36,8 @@
 #define PWMF_HANDLE 2
 #define PWMB_HANDLE 2
 
+#define PWM_ROTATE 4
+
 #define ACCE_KP 6
 #define ACCE_KD 30
 
