@@ -6,6 +6,8 @@
                    projectFiles="true">
       <itemPath>h/i2cEmem.h</itemPath>
       <itemPath>h/st.h</itemPath>
+      <itemPath>h/pwm.h</itemPath>
+      <itemPath>h/sensor.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -18,6 +20,8 @@
       <itemPath>src/i2cEmem.c</itemPath>
       <itemPath>src/traps.c</itemPath>
       <itemPath>src/st.c</itemPath>
+      <itemPath>src/pwm.c</itemPath>
+      <itemPath>src/sensor.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

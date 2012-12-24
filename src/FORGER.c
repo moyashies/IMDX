@@ -1,7 +1,9 @@
+#include <string.h>
 #include <xc.h>
 #include "../h/i2cEmem.h"
 
-#include "../h/control.h"
+#include "../h/pwm.h"
+#include "../h/sensor.h"
 #include "../h/st.h"
 
 _FICD(ICS_PGD3 & JTAGEN_OFF);
@@ -265,9 +267,9 @@ int main(void)
         gyro[2] = (char)rBuff[4];
         memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
-        angle[0] = angleX(acce);
-        angle[1] = angleY(acce);
-        angle[2] = angleZ(acce);
+        angle[0] = angleAcceX(acce);
+        angle[1] = angleAcceY(acce);
+        angle[2] = angleAcceZ(acce);
         memcpy(angleBefore, angle, sizeof(angleBefore));
 
         stf("A,%d,%d,%d,"
@@ -450,19 +452,19 @@ void _ISRFAST _T1Interrupt(void)
                 pwmb = PWM_STOP;
             } else {
                 angleXPD = _my_angleXPD(angle, angleBefore,
-                        received[7], received[8]);
+                        received[7] / 4, received[8] / 4);
                 angleYPD = _my_angleYPD(angle, angleBefore,
-                        received[7], received[8]);
+                        received[7] / 4, received[8] / 4);
 
                 gyroXPD = _my_gyroXPD(gyro, gyroBefore,
-                        received[9], received[10]);
+                        received[9] / 4, received[10] / 4);
                 gyroYPD = _my_gyroYPD(gyro, gyroBefore,
-                        received[9], received[10]);
+                        received[9] / 4, received[10] / 4);
 
-                pwml = _my_pwml(received, gyro, angleXPD, gyroXPD);
-                pwmr = _my_pwmr(received, gyro, angleXPD, gyroXPD);
-                pwmf = _my_pwmf(received, gyro, angleYPD, gyroYPD);
-                pwmb = _my_pwmb(received, gyro, angleYPD, gyroYPD);
+                pwml = PWMLeft(received, gyro, angleXPD, gyroXPD);
+                pwmr = PWMRight(received, gyro, angleXPD, gyroXPD);
+                pwmf = PWMFront(received, gyro, angleYPD, gyroYPD);
+                pwmb = PWMBack(received, gyro, angleYPD, gyroYPD);
             }
         }
     } else {
