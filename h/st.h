@@ -9,7 +9,6 @@
 #  define DEBUGF(format, ...) _LOG("[DEBUG] " format, ##__VA_ARGS__)
 #endif
 
-void transmitStr(const char* buf);
 void st(const char* buf);
 void stf(const char* format, ...);
 

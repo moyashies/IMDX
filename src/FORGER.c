@@ -45,6 +45,7 @@ void beep(unsigned int wait);
 
 unsigned char getChar(void);
 void setChar(unsigned char c);
+void transmitStr(const char* buf);
 
 // Instantiate Drive and Data objects
 I2CEMEM_DRV i2cmem = I2CSEMEM_DRV_DEFAULTS;
@@ -74,10 +75,12 @@ unsigned int motorEnable = 0;
 unsigned int receivedNum = 0;
 unsigned char isTimeout = 1;
 
-int angle[3], acce[3], gyro[3];
+int angle[2] = {};
+int acce[3], gyro[3];
 
-int angleBefore[3] = {};
-int acceBefore[3] = {};
+int angleAcce[3];
+
+int angleBefore[2] = {};
 int gyroBefore[3] = {};
 
 int angleXPD, angleYPD, gyroXPD, gyroYPD;
@@ -99,14 +102,25 @@ unsigned char getChar()
 
 void setChar(unsigned char c)
 {
-    while (num == 128);
+    while (bufNum == 128);
 
     buf[(bufIndex + bufNum) % 128] = c;
-    num++;
+    bufNum++;
     if (!IEC0bits.U1TXIE) {
         U1TXREG = getChar();
         IFS0bits.U1TXIF = 0;
         IEC0bits.U1TXIE = 1;
+    }
+}
+
+void transmitStr(const char* buf)
+{
+    for (; ; ++buf) {
+        if (*buf != '\0') {
+            setChar(*buf);
+        } else {
+            break;
+        }
     }
 }
 

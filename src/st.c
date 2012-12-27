@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdarg.h>
-#include <xc.h>
 
 #include "../h/st.h"
 
