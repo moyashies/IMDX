@@ -24,17 +24,17 @@ int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd)
         + (gyroBefore[0] - gyro[0]) * kd;
 }
 
-unsigned int PWMLeft(const unsigned int* received, const int* gyro,
+unsigned int PWMLeft(const unsigned int* received, int gyroZ,
         int angleXPD, int gyroXPD)
 {
     int pwm =
-        PWM_BASE
+        PWM_L_BASE
         + (received[4] - 128) * PWM_THROTTLE
         + (received[3] - 128) * PWM_HANDLE
             - angleXPD - gyroXPD;
 
     if (received[1] == 128) {
-        pwm -= gyro[2] * PWM_POSTURE;
+        pwm -= gyroZ * PWM_POSTURE;
     } else {
         pwm += (received[1] - 128) * PWM_ROTATE;
     }
@@ -42,17 +42,17 @@ unsigned int PWMLeft(const unsigned int* received, const int* gyro,
     return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
-unsigned int PWMRight(const unsigned int* received, const int* gyro,
+unsigned int PWMRight(const unsigned int* received, int gyroZ,
         int angleXPD, int gyroXPD)
 {
     int pwm =
-        PWM_BASE
+        PWM_R_BASE
         + (received[4] - 128) * PWM_THROTTLE
         + (128 - received[3]) * PWM_HANDLE
             + angleXPD + gyroXPD;
 
     if (received[1] == 128) {
-        pwm -= gyro[2] * PWM_POSTURE;
+        pwm -= gyroZ * PWM_POSTURE;
     } else {
         pwm += (received[1] - 128) * PWM_ROTATE;
     }
@@ -60,17 +60,17 @@ unsigned int PWMRight(const unsigned int* received, const int* gyro,
     return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
-unsigned int PWMFront(const unsigned int* received, const int* gyro,
+unsigned int PWMFront(const unsigned int* received, int gyroZ,
         int angleYPD, int gyroYPD)
 {
     int pwm =
-        PWM_BASE
+        PWM_F_BASE
         + (received[4] - 128) * PWM_THROTTLE
         + (128 - received[2]) * PWM_HANDLE
             - angleYPD + gyroYPD;
 
     if (received[1] == 128) {
-        pwm += gyro[2] * PWM_POSTURE;
+        pwm += gyroZ * PWM_POSTURE;
     } else {
         pwm += (128 - received[1]) * PWM_ROTATE;
     }
@@ -78,17 +78,17 @@ unsigned int PWMFront(const unsigned int* received, const int* gyro,
     return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
 }
 
-unsigned int PWMBack(const unsigned int* received, const int* gyro,
+unsigned int PWMBack(const unsigned int* received, int gyroZ,
         int angleYPD, int gyroYPD)
 {
     int pwm =
-        PWM_BASE
+        PWM_B_BASE
         + (received[4] - 128) * PWM_THROTTLE
         + (received[2] - 128) * PWM_HANDLE
             + angleYPD - gyroYPD;
 
     if (received[1] == 128) {
-        pwm += gyro[2] * PWM_POSTURE;
+        pwm += gyroZ * PWM_POSTURE;
     } else {
         pwm += (128 - received[1]) * PWM_ROTATE;
     }

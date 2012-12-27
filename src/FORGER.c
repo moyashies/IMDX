@@ -408,10 +408,10 @@ void _ISRFAST _T1Interrupt(void)
                 gyroYPD = _my_gyroYPD(gyro, gyroBefore,
                         received[9] / 4, received[10] / 4);
 
-                pwml = PWMLeft(received, gyro, angleXPD, gyroXPD);
-                pwmr = PWMRight(received, gyro, angleXPD, gyroXPD);
-                pwmf = PWMFront(received, gyro, angleYPD, gyroYPD);
-                pwmb = PWMBack(received, gyro, angleYPD, gyroYPD);
+                pwml = PWMLeft(received, gyro[2], angleXPD, gyroXPD);
+                pwmr = PWMRight(received, gyro[2], angleXPD, gyroXPD);
+                pwmf = PWMFront(received, gyro[2], angleYPD, gyroYPD);
+                pwmb = PWMBack(received, gyro[2], angleYPD, gyroYPD);
             }
         }
     } else {
