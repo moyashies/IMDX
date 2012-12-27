@@ -28,14 +28,16 @@ _FGS(GWRP_OFF & GCP_OFF);
 #define PWMF PDC1
 #define PWMB PDC2
 
+#define SENSOR_CYCLE 0.2
+#define ANGULAR_VELOCITY (2 * M_PI * 0.1)
+
 void initOsc();
 void initPort();
 void initPmd();
 void initPwm();
 void initAd();
 void initUART();
-void initT1();
-void initT3();
+void initTimer();
 void initOC1();
 void initInt();
 void stopMotor();
@@ -115,8 +117,7 @@ int main(void)
     initPwm();
     initAd();
     initUART();
-    initT1();
-    initT3();
+    initTimer();
     initOC1();
     initInt();
     stopMotor();
@@ -141,7 +142,7 @@ int main(void)
 
     INFOF("starting...");
     leds = 0x0f;
-    beep(500);
+    beep(250);
     stopMotor();
 
     // Initialise ACCE
@@ -217,7 +218,6 @@ int main(void)
             leds = received[0];
         }
 
-        // Read Data
         rData.devSel = ACCE;
         rData.addr = 0xa9;
         rData.n = 5;
@@ -227,16 +227,11 @@ int main(void)
             i2cmem.tick(&i2cmem);
         }
 
-        acce[0] = (char)rBuff[0];
-        acce[1] = (char)rBuff[2];
-        acce[2] = (char)rBuff[4];
+        // low-pass filter
+        acce[0] = 0.9 * acce[0] + 0.1 * (char)rBuff[0];
+        acce[1] = 0.9 * acce[1] + 0.1 * (char)rBuff[2];
+        acce[2] = 0.9 * acce[2] + 0.1 * (char)rBuff[4];
 
-        acce[0] = (int)(0.95 * acceBefore[0] + 0.05 * acce[0]);
-        acce[1] = (int)(0.95 * acceBefore[1] + 0.05 * acce[1]);
-        acce[2] = (int)(0.95 * acceBefore[2] + 0.05 * acce[2]);
-        memcpy(acceBefore, acce, sizeof(acceBefore));
-
-        // Read Data
         rData.devSel = GYRO;
         rData.addr = 0xa9;
         rData.n = 5;
@@ -251,17 +246,24 @@ int main(void)
         gyro[2] = (char)rBuff[4];
         memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
-        angle[0] = angleAcceX(acce);
-        angle[1] = angleAcceY(acce);
-        angle[2] = angleAcceZ(acce);
-        memcpy(angleBefore, angle, sizeof(angleBefore));
+        angleAcce[0] = angleAcceX(acce);
+        angleAcce[1] = angleAcceY(acce);
+
+        angle[0] +=
+            - angle[0] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            + angleAcce[0] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            - gyro[0] * SENSOR_CYCLE;
+        angle[1] +=
+            - angle[1] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            + angleAcce[1] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            + gyro[1] * SENSOR_CYCLE;
 
         stf("A,%d,%d,%d,"
             "%d,%d,%d,"
-            "%d,%d,%d\n",
+            "%d,%d,0\n",
             acce[0], acce[1], acce[2],
             gyro[0], gyro[1], gyro[2],
-            angle[0], angle[1], angle[2]);
+            angle[0], angle[1]);
 
         stf("M,%d,%d,%d,%d\n",
             pwml, pwmr, pwmf, pwmb);
@@ -399,14 +401,14 @@ void _ISRFAST _T1Interrupt(void)
                 pwmb = PWM_STOP;
             } else {
                 angleXPD = _my_angleXPD(angle, angleBefore,
-                        received[7] / 4, received[8] / 4);
+                        received[7], received[8]);
                 angleYPD = _my_angleYPD(angle, angleBefore,
-                        received[7] / 4, received[8] / 4);
+                        received[7], received[8]);
 
                 gyroXPD = _my_gyroXPD(gyro, gyroBefore,
-                        received[9] / 4, received[10] / 4);
+                        received[9], received[10]);
                 gyroYPD = _my_gyroYPD(gyro, gyroBefore,
-                        received[9] / 4, received[10] / 4);
+                        received[9], received[10]);
 
                 pwml = PWMLeft(received, gyro[2], angleXPD, gyroXPD);
                 pwmr = PWMRight(received, gyro[2], angleXPD, gyroXPD);
@@ -430,6 +432,11 @@ void _ISRFAST _T1Interrupt(void)
 void _ISRFAST _T3Interrupt(void)
 {
     IFS0bits.T3IF = 0;
+}
+
+void _ISRFAST _T4Interrupt(void)
+{
+    IFS1bits.T4IF = 0;
 
     isTimeout = receivedNum < 1 ? 1 : 0;
     receivedNum = 0;
@@ -540,20 +547,25 @@ void initUART()
     U1BRG = 455;
 }
 
-void initT1()
+void initTimer()
 {
-    T1CON = 0x0010;
-    PR1 = 8750;
+    // PWM
+    T1CON = 0x0010; // 1:8
+    PR1 = 8750;     // 1000 Hz
     TMR1 = 0;
     T1CON |= 0x8000;
-}
 
-void initT3()
-{
-    T3CON = 0x0030;
-    PR3 = 30000;
+    // acce, gyro sensor
+    T3CON = 0x0020; // 1:64
+    PR3 = 10937;    // 100 Hz
     TMR3 = 0;
     T3CON |= 0x8000;
+
+    // timeout
+    T4CON = 0x0030; // 1:256
+    PR4 = 54687;    // 5 Hz
+    TMR4 = 0;
+    T4CON |= 0x8000;
 }
 
 void initOC1()
@@ -572,10 +584,13 @@ void initInt()
     INTCON3 = 0x0000;
     INTCON4 = 0x0000;
 
-    IEC0 = 0x1908; // U1TXIE, U1RXIE, T3IE, T1IE
-    IPC0 = 0x4444; // T1
-    IPC3 = 0x4443; // T1
+    IEC0 = 0x1808; // U1TXIE, U1RXIE, disabled(T3IE), T1IE
+    IEC1 = 0x0800; // T4IE
+    IPC0 = 0x4444;
+    IPC3 = 0x4443; // U1TXIP
+    IPC6 = 0x4444; // T4IP
     IFS0 = 0x0000; // T1
+    IFS1 = 0x0000;
 }
 
 void stopMotor()
