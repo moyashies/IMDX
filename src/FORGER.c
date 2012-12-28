@@ -258,7 +258,6 @@ int main(void)
         gyro[0] = (char)rBuff[0];
         gyro[1] = (char)rBuff[2];
         gyro[2] = (char)rBuff[4];
-        memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
         angleAcce[0] = angleAcceX(acce);
         angleAcce[1] = angleAcceY(acce);
@@ -418,11 +417,13 @@ void _ISRFAST _T1Interrupt(void)
                         received[7], received[8]);
                 angleYPD = _my_angleYPD(angle, angleBefore,
                         received[7], received[8]);
+                memcpy(angleBefore, angle, sizeof(angleBefore));
 
                 gyroXPD = _my_gyroXPD(gyro, gyroBefore,
                         received[9], received[10]);
                 gyroYPD = _my_gyroYPD(gyro, gyroBefore,
                         received[9], received[10]);
+                memcpy(gyroBefore, gyro, sizeof(gyroBefore));
 
                 pwml = PWMLeft(received, gyro[2], angleXPD, gyroXPD);
                 pwmr = PWMRight(received, gyro[2], angleXPD, gyroXPD);
