@@ -2,26 +2,26 @@
 
 int _my_angleXPD(const int* angle, const int* angleBefore, int kp, int kd)
 {
-    return angle[1] * kp
-        + (angleBefore[1] - angle[1]) * kd;
+    return angle[1] * (kp / 10)
+        + (angleBefore[1] - angle[1]) * (kd / 10);
 }
 
 int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd)
 {
-    return angle[0] * kp
-        + (angleBefore[0] - angle[0]) * kd;
+    return angle[0] * (kp / 10)
+        + (angleBefore[0] - angle[0]) * (kd / 10);
 }
 
 int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd)
 {
-    return gyro[1] * kp
-        + (gyroBefore[1] - gyro[1]) * kd;
+    return gyro[1] * (kp / 10)
+        + (gyroBefore[1] - gyro[1]) * (kd / 10);
 }
 
 int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd)
 {
-    return gyro[0] * kp
-        + (gyroBefore[0] - gyro[0]) * kd;
+    return gyro[0] * (kp / 10)
+        + (gyroBefore[0] - gyro[0]) * (kd / 10);
 }
 
 unsigned int PWMLeft(const unsigned int* received, int gyroZ,
