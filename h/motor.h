@@ -1,5 +1,5 @@
-#ifndef __PWM_H
-#define __PWM_H
+#ifndef __MOTOR_H
+#define __MOTOR_H
 
 #define PWM_BASE 21000
 #define PWM_L_BASE 20860
@@ -42,4 +42,4 @@ int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd);
 int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd);
 int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd);
 
-#endif /* __PWM_H */
+#endif /* __MOTOR_H */

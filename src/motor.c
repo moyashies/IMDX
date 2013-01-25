@@ -1,4 +1,4 @@
-#include "../h/pwm.h"
+#include "../h/motor.h"
 #include "../h/receive.h"
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))

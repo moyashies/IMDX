@@ -1,7 +1,7 @@
 #include <xc.h>
 #include "../h/i2cEmem.h"
 
-#include "../h/pwm.h"
+#include "../h/motor.h"
 #include "../h/receive.h"
 #include "../h/sensor.h"
 #include "../h/transmit.h"

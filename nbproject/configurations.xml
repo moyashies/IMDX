@@ -5,7 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>h/i2cEmem.h</itemPath>
-      <itemPath>h/pwm.h</itemPath>
+      <itemPath>h/motor.h</itemPath>
       <itemPath>h/receive.h</itemPath>
       <itemPath>h/sensor.h</itemPath>
       <itemPath>h/transmit.h</itemPath>
@@ -19,7 +19,7 @@
                    projectFiles="true">
       <itemPath>src/FORGER.c</itemPath>
       <itemPath>src/i2cEmem.c</itemPath>
-      <itemPath>src/pwm.c</itemPath>
+      <itemPath>src/motor.c</itemPath>
       <itemPath>src/receive.c</itemPath>
       <itemPath>src/sensor.c</itemPath>
       <itemPath>src/transmit.c</itemPath>
