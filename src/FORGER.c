@@ -1,10 +1,10 @@
 #include <xc.h>
 #include "../h/i2cEmem.h"
 
-#include "../h/protocol.h"
 #include "../h/pwm.h"
+#include "../h/receive.h"
 #include "../h/sensor.h"
-#include "../h/st.h"
+#include "../h/transmit.h"
 
 _FICD(ICS_PGD3 & JTAGEN_OFF);
 _FPOR(ALTI2C1_OFF & ALTI2C2_ON & WDTWIN_WIN50);
@@ -42,10 +42,6 @@ void initInt();
 void stopMotor();
 void beep(unsigned int wait);
 
-unsigned char getChar(void);
-void setChar(unsigned char c);
-void transmitStr(const char* buf);
-
 // Instantiate Drive and Data objects
 I2CEMEM_DRV i2cmem = I2CSEMEM_DRV_DEFAULTS;
 I2CEMEM_DATA wData;
@@ -54,9 +50,6 @@ I2CEMEM_DATA rData;
 unsigned int wBuff[10], rBuff[10];
 
 unsigned int i = 0;
-
-unsigned int received[15];
-unsigned int dataOK = 0;
 
 unsigned int pswC = 0;
 unsigned int pswF = 0;
@@ -69,59 +62,18 @@ unsigned int sswV = 0;
 unsigned int leds = 0;
 unsigned int ledCount = 0;
 
-unsigned int motorEnable = 0;
-
 unsigned int receivedNum = 0;
-unsigned char isTimeout = 1;
 
 int angle[2] = {};
 int acce[3], gyro[3];
-
-int angleAcce[3];
 
 int angleBefore[2] = {};
 int gyroBefore[3] = {};
 
 int angleXPD, angleYPD, gyroXPD, gyroYPD;
 
-unsigned int pwml, pwmr, pwmf, pwmb;
-
-unsigned char bufNum = 0;
-unsigned char bufIndex = 0;
-unsigned int buf[128];
-
-unsigned char getChar()
-{
-    unsigned char c;
-    c = buf[bufIndex % 128];
-    bufIndex++;
-    bufNum--;
-    return c;
-}
-
-void setChar(unsigned char c)
-{
-    while (bufNum == 128);
-
-    buf[(bufIndex + bufNum) % 128] = c;
-    bufNum++;
-    if (!IEC0bits.U1TXIE) {
-        U1TXREG = getChar();
-        IFS0bits.U1TXIF = 0;
-        IEC0bits.U1TXIE = 1;
-    }
-}
-
-void transmitStr(const char* buf)
-{
-    for (; ; ++buf) {
-        if (*buf != '\0') {
-            setChar(*buf);
-        } else {
-            break;
-        }
-    }
-}
+struct pwm motor;
+struct rx rx;
 
 int main(void)
 {
@@ -214,21 +166,19 @@ int main(void)
 
     INFOF("started!");
     while (1) {
-        if (isTimeout) {
+        if (rx.timeout) {
             leds = 0x0f;
             continue;
         }
 
-        motorEnable = sswV ? 1 : 0;
         if (pswF && pswV) {
             pswF = 0;
             INFOF("s");
         }
         leds ^= 0x04;
-        if (dataOK) {
-            dataOK = 0;
+        if (rx.ok) {
+            rx.ok = 0;
             leds ^= 0x08;
-            leds = received[0];
         }
 
         rData.devSel = ACCE;
@@ -258,16 +208,13 @@ int main(void)
         gyro[1] = (char)rBuff[2];
         gyro[2] = (char)rBuff[4];
 
-        angleAcce[0] = angleAcceX(acce);
-        angleAcce[1] = angleAcceY(acce);
-
         angle[0] +=
             - angle[0] * ANGULAR_VELOCITY * SENSOR_CYCLE
-            + angleAcce[0] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            + angleAcceX(acce) * ANGULAR_VELOCITY * SENSOR_CYCLE
             - gyro[0] * SENSOR_CYCLE;
         angle[1] +=
             - angle[1] * ANGULAR_VELOCITY * SENSOR_CYCLE
-            + angleAcce[1] * ANGULAR_VELOCITY * SENSOR_CYCLE
+            + angleAcceY(acce) * ANGULAR_VELOCITY * SENSOR_CYCLE
             + gyro[1] * SENSOR_CYCLE;
 
         stf("A,%d,%d,%d,"
@@ -278,7 +225,7 @@ int main(void)
             angle[0], angle[1]);
 
         stf("M,%d,%d,%d,%d\n",
-            pwml, pwmr, pwmf, pwmb);
+            motor.left, motor.right, motor.front, motor.back);
     }
     return 0;
 }
@@ -301,12 +248,10 @@ void _ISR _U1RXInterrupt(void)
 
     switch (c) {
     case 'q':
-        clearReceivingBuffer();
+        rxBegin();
         break;
     case 'r':
-        if (doneReceiving(received)) {
-            dataOK = 1;
-        }
+        rxCommit();
         break;
     case 'a':
     case 'b': /* rotate */
@@ -324,7 +269,7 @@ void _ISR _U1RXInterrupt(void)
     case 'n':
     case 'o':
     case 'p':
-        prepareReceive(c);
+        rxIndex(c);
         break;
     case '0':
     case '1':
@@ -336,7 +281,7 @@ void _ISR _U1RXInterrupt(void)
     case '7':
     case '8':
     case '9':
-        receiveNum(c);
+        rxNum(c);
         break;
     }
 }
@@ -345,8 +290,8 @@ void _ISR _U1TXInterrupt(void)
 {
     IFS0bits.U1TXIF = 0;
 
-    if (bufNum > 0) {
-        U1TXREG = getChar();
+    if (!txIsEmpty()) {
+        U1TXREG = txPop();
     } else {
         IEC0bits.U1TXIE = 0;
     }
@@ -403,48 +348,43 @@ void _ISRFAST _T1Interrupt(void)
     // 時計回りで自転 => 時計回りのローターの出力UP
     // 高度をできるだけ保つ
 
-    if (motorEnable && !isTimeout) {
-        if (dataOK) {
-            dataOK = 0;
-            if (received[5] == 0) {
-                pwml = PWM_STOP;
-                pwmr = PWM_STOP;
-                pwmf = PWM_STOP;
-                pwmb = PWM_STOP;
-            } else {
+    // motorEnable
+    if (sswV && !rx.timeout) {
+        if (rx.ok) {
+            rx.ok = 0;
+            if (rx.buf[RX_TRIGGER] != 0) {
                 angleXPD = _my_angleXPD(angle, angleBefore,
-                        received[7], received[8]);
+                        rx.buf[RX_ANGLE_KP], rx.buf[RX_ANGLE_KD]);
                 angleYPD = _my_angleYPD(angle, angleBefore,
-                        received[7], received[8]);
+                        rx.buf[RX_ANGLE_KP], rx.buf[RX_ANGLE_KD]);
                 angleBefore[0] = angle[0];
                 angleBefore[1] = angle[1];
                 angleBefore[2] = angle[2];
 
                 gyroXPD = _my_gyroXPD(gyro, gyroBefore,
-                        received[9], received[10]);
+                        rx.buf[RX_GYRO_KP], rx.buf[RX_GYRO_KD]);
                 gyroYPD = _my_gyroYPD(gyro, gyroBefore,
-                        received[9], received[10]);
+                        rx.buf[RX_GYRO_KP], rx.buf[RX_GYRO_KD]);
                 gyroBefore[0] = gyro[0];
                 gyroBefore[1] = gyro[1];
                 gyroBefore[2] = gyro[2];
 
-                pwml = PWMLeft(received, gyro[2], angleXPD, gyroXPD);
-                pwmr = PWMRight(received, gyro[2], angleXPD, gyroXPD);
-                pwmf = PWMFront(received, gyro[2], angleYPD, gyroYPD);
-                pwmb = PWMBack(received, gyro[2], angleYPD, gyroYPD);
+                motorLeft(gyro[2], angleXPD, gyroXPD);
+                motorRight(gyro[2], angleXPD, gyroXPD);
+                motorFront(gyro[2], angleYPD, gyroYPD);
+                motorBack(gyro[2], angleYPD, gyroYPD);
+            } else {
+                motorStop();
             }
         }
     } else {
-        pwml = PWM_STOP;
-        pwmr = PWM_STOP;
-        pwmf = PWM_STOP;
-        pwmb = PWM_STOP;
+        motorStop();
     }
 
-    PWML = pwml;
-    PWMR = pwmr / 2;
-    PWMF = pwmf;
-    PWMB = pwmb;
+    PWML = motor.left;
+    PWMR = motor.right / 2;
+    PWMF = motor.front;
+    PWMB = motor.back;
 }
 
 void _ISRFAST _T3Interrupt(void)
@@ -456,7 +396,7 @@ void _ISRFAST _T4Interrupt(void)
 {
     IFS1bits.T4IF = 0;
 
-    isTimeout = receivedNum < 1 ? 1 : 0;
+    rx.timeout = receivedNum == 0 ? 1 : 0;
     receivedNum = 0;
 }
 
@@ -499,8 +439,8 @@ void initPort()
     RPOR3 = 0x1000; // RP41 = OC1
     RPOR4 = 0x0011; // RP42 = OC2
 
-    pswV = P_PSW;
-    sswV = P_SSW;
+    pswV = P_PSW ? 1 : 0;
+    sswV = P_SSW ? 1 : 0;
     pswC = 0;
     sswC = 0;
     pswF = 0;
