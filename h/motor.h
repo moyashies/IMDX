@@ -31,15 +31,9 @@ struct pwm {
 extern struct pwm motor;
 
 void motorStop();
-
-void motorLeft(int gyroZ, int angleXPD, int gyroXPD);
-void motorRight(int gyroZ, int angleXPD, int gyroXPD);
-void motorFront(int gyroZ, int angleYPD, int gyroYPD);
-void motorBack(int gyroZ, int angleYPD, int gyroYPD);
-
-int _my_angleXPD(const int* angle, const int* angleBefore, int kp, int kd);
-int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd);
-int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd);
-int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd);
+void motorLeft(int gyroZ);
+void motorRight(int gyroZ);
+void motorFront(int gyroZ);
+void motorBack(int gyroZ);
 
 #endif /* __MOTOR_H */

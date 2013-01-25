@@ -1,4 +1,5 @@
 #include "../h/motor.h"
+#include "../h/pd.h"
 #include "../h/receive.h"
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
@@ -14,14 +15,14 @@ void motorStop()
     motor.back  = PWM_STOP;
 }
 
-void motorLeft(int gyroZ, int angleXPD, int gyroXPD)
+void motorLeft(int gyroZ)
 {
     int pwm;
 
     pwm = PWM_L_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_Y] - 128) * PWM_HANDLE
-            - angleXPD - gyroXPD;
+            - anglePd.x - gyroPd.x;
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm -= gyroZ * PWM_POSTURE;
@@ -32,14 +33,14 @@ void motorLeft(int gyroZ, int angleXPD, int gyroXPD)
     motor.left = pwm_limit(pwm);
 }
 
-void motorRight(int gyroZ, int angleXPD, int gyroXPD)
+void motorRight(int gyroZ)
 {
     int pwm;
 
     pwm = PWM_R_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_Y]) * PWM_HANDLE
-            + angleXPD + gyroXPD;
+            + anglePd.x + gyroPd.x;
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm -= gyroZ * PWM_POSTURE;
@@ -50,14 +51,14 @@ void motorRight(int gyroZ, int angleXPD, int gyroXPD)
     motor.right = pwm_limit(pwm);
 }
 
-void motorFront(int gyroZ, int angleYPD, int gyroYPD)
+void motorFront(int gyroZ)
 {
     int pwm;
 
     pwm = PWM_F_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_X]) * PWM_HANDLE
-            - angleYPD + gyroYPD;
+            - anglePd.y + gyroPd.y;
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm += gyroZ * PWM_POSTURE;
@@ -68,14 +69,14 @@ void motorFront(int gyroZ, int angleYPD, int gyroYPD)
     motor.front = pwm_limit(pwm);
 }
 
-void motorBack(int gyroZ, int angleYPD, int gyroYPD)
+void motorBack(int gyroZ)
 {
     int pwm;
 
     pwm = PWM_B_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_X] - 128) * PWM_HANDLE
-            + angleYPD - gyroYPD;
+            + anglePd.y - gyroPd.y;
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm += gyroZ * PWM_POSTURE;
@@ -89,28 +90,4 @@ void motorBack(int gyroZ, int angleYPD, int gyroYPD)
 static inline int pwm_limit(int pwm)
 {
     return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
-}
-
-int _my_angleXPD(const int* angle, const int* angleBefore, int kp, int kd)
-{
-    return angle[1] * (kp / 10)
-        + (angleBefore[1] - angle[1]) * (kd / 10);
-}
-
-int _my_angleYPD(const int* angle, const int* angleBefore, int kp, int kd)
-{
-    return angle[0] * (kp / 10)
-        + (angleBefore[0] - angle[0]) * (kd / 10);
-}
-
-int _my_gyroXPD(const int* gyro, const int* gyroBefore, int kp, int kd)
-{
-    return gyro[1] * (kp / 10)
-        + (gyroBefore[1] - gyro[1]) * (kd / 10);
-}
-
-int _my_gyroYPD(const int* gyro, const int* gyroBefore, int kp, int kd)
-{
-    return gyro[0] * (kp / 10)
-        + (gyroBefore[0] - gyro[0]) * (kd / 10);
 }

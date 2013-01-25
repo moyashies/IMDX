@@ -2,6 +2,7 @@
 #include "../h/i2cEmem.h"
 
 #include "../h/motor.h"
+#include "../h/pd.h"
 #include "../h/receive.h"
 #include "../h/sensor.h"
 #include "../h/transmit.h"
@@ -70,10 +71,9 @@ int acce[3], gyro[3];
 int angleBefore[2] = {};
 int gyroBefore[3] = {};
 
-int angleXPD, angleYPD, gyroXPD, gyroYPD;
-
 struct pwm motor;
 struct rx rx;
+struct pd anglePd, gyroPd;
 
 int main(void)
 {
@@ -260,10 +260,10 @@ void _ISR _U1RXInterrupt(void)
     case 'e': /* throttle */
     case 'f': /* enable switch */
     case 'g':
-    case 'h':
-    case 'i':
-    case 'j':
-    case 'k':
+    case 'h': /* angle KP */
+    case 'i': /* angle KD */
+    case 'j': /* gyro KP */
+    case 'k': /* gyro KD */
     case 'l':
     case 'm':
     case 'n':
@@ -353,26 +353,20 @@ void _ISRFAST _T1Interrupt(void)
         if (rx.ok) {
             rx.ok = 0;
             if (rx.buf[RX_TRIGGER] != 0) {
-                angleXPD = _my_angleXPD(angle, angleBefore,
-                        rx.buf[RX_ANGLE_KP], rx.buf[RX_ANGLE_KD]);
-                angleYPD = _my_angleYPD(angle, angleBefore,
-                        rx.buf[RX_ANGLE_KP], rx.buf[RX_ANGLE_KD]);
+                setAnglePd(angle, angleBefore);
                 angleBefore[0] = angle[0];
                 angleBefore[1] = angle[1];
                 angleBefore[2] = angle[2];
 
-                gyroXPD = _my_gyroXPD(gyro, gyroBefore,
-                        rx.buf[RX_GYRO_KP], rx.buf[RX_GYRO_KD]);
-                gyroYPD = _my_gyroYPD(gyro, gyroBefore,
-                        rx.buf[RX_GYRO_KP], rx.buf[RX_GYRO_KD]);
+                setGyroPd(gyro, gyroBefore);
                 gyroBefore[0] = gyro[0];
                 gyroBefore[1] = gyro[1];
                 gyroBefore[2] = gyro[2];
 
-                motorLeft(gyro[2], angleXPD, gyroXPD);
-                motorRight(gyro[2], angleXPD, gyroXPD);
-                motorFront(gyro[2], angleYPD, gyroYPD);
-                motorBack(gyro[2], angleYPD, gyroYPD);
+                motorLeft(gyro[2]);
+                motorRight(gyro[2]);
+                motorFront(gyro[2]);
+                motorBack(gyro[2]);
             } else {
                 motorStop();
             }
