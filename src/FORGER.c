@@ -219,7 +219,7 @@ int main(void)
 
         stf("A,%d,%d,%d,"
             "%d,%d,%d,"
-            "%d,%d,0\n",
+            "%d,%d\n",
             acce[0], acce[1], acce[2],
             gyro[0], gyro[1], gyro[2],
             angle[0], angle[1]);
