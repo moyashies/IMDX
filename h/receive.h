@@ -4,16 +4,16 @@
 #define RX_BUFSIZE 16
 
 enum rx_protocol {
-   RX_ROTATE   = 1,
-   RX_HANDLE_X = 2,
-   RX_HANDLE_Y = 3,
-   RX_THROTTLE = 4,
-   RX_TRIGGER  = 5,
+   RX_ROTATE   = 1,  /* b */
+   RX_HANDLE_X = 2,  /* c */
+   RX_HANDLE_Y = 3,  /* d */
+   RX_THROTTLE = 4,  /* e */
+   RX_TRIGGER  = 5,  /* f */
 
-   RX_ANGLE_KP = 7,
-   RX_ANGLE_KD = 8,
-   RX_GYRO_KP  = 9,
-   RX_GYRO_KD  = 10
+   RX_ANGLE_KP = 7,  /* h */
+   RX_ANGLE_KD = 8,  /* i */
+   RX_GYRO_KP  = 9,  /* j */
+   RX_GYRO_KD  = 10  /* k */
 };
 
 struct rx {

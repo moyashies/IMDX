@@ -15,7 +15,8 @@ void rxBegin()
 
 void rxCommit()
 {
-    /* [b-e] parameter is required. */
+    /* [b-e] parameter is required.
+       (b:rotate, c:handle x, d:handle y, e:throttle) */
     if (received & 0x001e) {
         memcpy(rx.buf, receiving, sizeof(receiving));
         rx.ok = 1;

@@ -258,7 +258,7 @@ void _ISR _U1RXInterrupt(void)
     case 'c': /* handle x */
     case 'd': /* handle y */
     case 'e': /* throttle */
-    case 'f': /* enable switch */
+    case 'f': /* trigger */
     case 'g':
     case 'h': /* angle KP */
     case 'i': /* angle KD */
