@@ -1,11 +1,15 @@
 #ifndef __SENSOR_H
 #define __SENSOR_H
 
-/* taken from math.h */
-#define M_PI 3.14159265358979323846264338327950288
+extern int acce[3], gyro[3];
+extern int angle[2];
+extern int angleBefore[2], gyroBefore[3];
 
-int angleAcceX(const int* acce);
-int angleAcceY(const int* acce);
-int angleAcceZ(const int* acce);
+void setAngleX();
+void setAngleY();
+
+int angleAcceX();
+int angleAcceY();
+int angleAcceZ();
 
 #endif /* __SENSOR_H */

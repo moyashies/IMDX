@@ -28,9 +28,6 @@ _FGS(GWRP_OFF & GCP_OFF);
 #define PWMF PDC1
 #define PWMB PDC2
 
-#define SENSOR_CYCLE 0.2
-#define ANGULAR_VELOCITY (2 * M_PI * 0.1)
-
 void initOsc();
 void initPort();
 void initPmd();
@@ -65,12 +62,11 @@ unsigned int ledCount = 0;
 
 unsigned int receivedNum = 0;
 
-int angle[2] = {};
 int acce[3], gyro[3];
-
 int angleBefore[2] = {};
 int gyroBefore[3] = {};
 
+int angle[2] = {};
 int anglePd[2], gyroPd[3];
 
 struct pwm motor;
@@ -209,14 +205,8 @@ int main(void)
         gyro[1] = (char)rBuff[2];
         gyro[2] = (char)rBuff[4];
 
-        angle[0] +=
-            - angle[0] * ANGULAR_VELOCITY * SENSOR_CYCLE
-            + angleAcceX(acce) * ANGULAR_VELOCITY * SENSOR_CYCLE
-            - gyro[0] * SENSOR_CYCLE;
-        angle[1] +=
-            - angle[1] * ANGULAR_VELOCITY * SENSOR_CYCLE
-            + angleAcceY(acce) * ANGULAR_VELOCITY * SENSOR_CYCLE
-            + gyro[1] * SENSOR_CYCLE;
+        setAngleX();
+        setAngleY();
 
         stf("A,%d,%d,%d,"
             "%d,%d,%d,"
@@ -353,21 +343,17 @@ void _ISRFAST _T1Interrupt(void)
     if (sswV && !rx.timeout) {
         if (rx.ok) {
             rx.ok = 0;
-            if (rx.buf[RX_TRIGGER] != 0) {
-                setAnglePd(angle, angleBefore);
+            if (rx.buf[RX_TRIGGER] == 1) {
+                setAnglePd();
                 angleBefore[0] = angle[0];
                 angleBefore[1] = angle[1];
-                angleBefore[2] = angle[2];
 
-                setGyroPd(gyro, gyroBefore);
+                setGyroPd();
                 gyroBefore[0] = gyro[0];
                 gyroBefore[1] = gyro[1];
                 gyroBefore[2] = gyro[2];
 
-                motorLeft(gyro[2]);
-                motorRight(gyro[2]);
-                motorFront(gyro[2]);
-                motorBack(gyro[2]);
+                motorStart();
             } else {
                 motorStop();
             }

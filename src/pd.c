@@ -1,7 +1,8 @@
 #include "../h/pd.h"
 #include "../h/receive.h"
+#include "../h/sensor.h"
 
-void setAnglePd(const int* angle, const int* angleBefore)
+void setAnglePd()
 {
     anglePd[0] = angle[0] * (rx.buf[RX_ANGLE_KP] / 10)
         + (angleBefore[0] - angle[0]) * (rx.buf[RX_ANGLE_KD] / 10);
@@ -9,7 +10,7 @@ void setAnglePd(const int* angle, const int* angleBefore)
         + (angleBefore[1] - angle[1]) * (rx.buf[RX_ANGLE_KD] / 10);
 }
 
-void setGyroPd(const int* gyro, const int* gyroBefore)
+void setGyroPd()
 {
     gyroPd[0] = gyro[0] * (rx.buf[RX_ANGLE_KP] / 10)
         + (gyroBefore[0] - gyro[0]) * (rx.buf[RX_ANGLE_KD] / 10);

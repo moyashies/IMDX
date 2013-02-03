@@ -30,10 +30,7 @@ struct pwm {
 
 extern struct pwm motor;
 
+void motorStart();
 void motorStop();
-void motorLeft(int gyroZ);
-void motorRight(int gyroZ);
-void motorFront(int gyroZ);
-void motorBack(int gyroZ);
 
 #endif /* __MOTOR_H */

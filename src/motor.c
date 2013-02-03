@@ -1,12 +1,24 @@
 #include "../h/motor.h"
 #include "../h/pd.h"
 #include "../h/receive.h"
+#include "../h/sensor.h"
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
 #define PWM_LIMIT(__pwm) MAX(PWM_MIN, MIN(__pwm, PWM_MAX));
 
-static inline int pwm_limit(int pwm);
+static inline void motorLeft();
+static inline void motorRight();
+static inline void motorFront();
+static inline void motorBack();
+
+void motorStart()
+{
+    motorLeft();
+    motorRight();
+    motorFront();
+    motorBack();
+}
 
 void motorStop()
 {
@@ -16,7 +28,7 @@ void motorStop()
     motor.back  = PWM_STOP;
 }
 
-void motorLeft(int gyroZ)
+static inline void motorLeft()
 {
     int pwm;
 
@@ -26,7 +38,7 @@ void motorLeft(int gyroZ)
             - anglePd[1] - gyroPd[1];
 
     if (rx.buf[RX_ROTATE] == 128) {
-        pwm -= gyroZ * PWM_POSTURE;
+        pwm -= gyro[2] * PWM_POSTURE;
     } else {
         pwm += (rx.buf[RX_ROTATE] - 128) * PWM_ROTATE;
     }
@@ -34,7 +46,7 @@ void motorLeft(int gyroZ)
     motor.left = PWM_LIMIT(pwm);
 }
 
-void motorRight(int gyroZ)
+static inline void motorRight()
 {
     int pwm;
 
@@ -44,7 +56,7 @@ void motorRight(int gyroZ)
             + anglePd[1] + gyroPd[1];
 
     if (rx.buf[RX_ROTATE] == 128) {
-        pwm -= gyroZ * PWM_POSTURE;
+        pwm -= gyro[2] * PWM_POSTURE;
     } else {
         pwm += (rx.buf[RX_ROTATE] - 128) * PWM_ROTATE;
     }
@@ -52,7 +64,7 @@ void motorRight(int gyroZ)
     motor.right = PWM_LIMIT(pwm);
 }
 
-void motorFront(int gyroZ)
+static inline void motorFront()
 {
     int pwm;
 
@@ -62,7 +74,7 @@ void motorFront(int gyroZ)
             - anglePd[0] + gyroPd[0];
 
     if (rx.buf[RX_ROTATE] == 128) {
-        pwm += gyroZ * PWM_POSTURE;
+        pwm += gyro[2] * PWM_POSTURE;
     } else {
         pwm += (128 - rx.buf[RX_ROTATE]) * PWM_ROTATE;
     }
@@ -70,7 +82,7 @@ void motorFront(int gyroZ)
     motor.front = PWM_LIMIT(pwm);
 }
 
-void motorBack(int gyroZ)
+static inline void motorBack()
 {
     int pwm;
 
@@ -80,7 +92,7 @@ void motorBack(int gyroZ)
             + anglePd[0] - gyroPd[0];
 
     if (rx.buf[RX_ROTATE] == 128) {
-        pwm += gyroZ * PWM_POSTURE;
+        pwm += gyro[2] * PWM_POSTURE;
     } else {
         pwm += (128 - rx.buf[RX_ROTATE]) * PWM_ROTATE;
     }

@@ -3,7 +3,7 @@
 
 extern int anglePd[2], gyroPd[3];
 
-void setAnglePd(const int* gyro, const int* gyroBefore);
-void setGyroPd(const int* gyro, const int* gyroBefore);
+void setAnglePd();
+void setGyroPd();
 
 #endif /* __PD_H */
