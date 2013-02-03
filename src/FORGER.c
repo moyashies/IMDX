@@ -37,7 +37,7 @@ void initUART();
 void initTimer();
 void initOC1();
 void initInt();
-void stopMotor();
+void motorRefresh();
 void beep(unsigned int wait);
 
 // Instantiate Drive and Data objects
@@ -82,7 +82,9 @@ int main(void)
     initTimer();
     initOC1();
     initInt();
-    stopMotor();
+
+    motorStop();
+    motorRefresh();
 
     i2cmem.init(&i2cmem);
 
@@ -105,7 +107,9 @@ int main(void)
     INFOF("starting...");
     leds = 0x0f;
     beep(250);
-    stopMotor();
+
+    motorStop();
+    motorRefresh();
 
     // Initialise ACCE
     wData.devSel = ACCE;
@@ -353,7 +357,7 @@ void _ISRFAST _T1Interrupt(void)
                 gyroBefore[1] = gyro[1];
                 gyroBefore[2] = gyro[2];
 
-                motorStart();
+                motorSet();
             } else {
                 motorStop();
             }
@@ -361,11 +365,7 @@ void _ISRFAST _T1Interrupt(void)
     } else {
         motorStop();
     }
-
-    PWML = motor.left;
-    PWMR = motor.right / 2;
-    PWMF = motor.front;
-    PWMB = motor.back;
+    motorRefresh();
 }
 
 void _ISRFAST _T3Interrupt(void)
@@ -532,12 +532,12 @@ void initInt()
     IFS1 = 0x0000;
 }
 
-void stopMotor()
+void motorRefresh()
 {
-    PWML = PWM_STOP;
-    PWMR = PWM_STOP / 2;
-    PWMF = PWM_STOP;
-    PWMB = PWM_STOP;
+    PWML = motor.left;
+    PWMR = motor.right / 2;
+    PWMF = motor.front;
+    PWMB = motor.back;
 }
 
 void beep(unsigned int wait)

@@ -30,7 +30,7 @@ struct pwm {
 
 extern struct pwm motor;
 
-void motorStart();
+void motorSet();
 void motorStop();
 
 #endif /* __MOTOR_H */

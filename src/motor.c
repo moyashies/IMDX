@@ -12,7 +12,7 @@ static inline void motorRight();
 static inline void motorFront();
 static inline void motorBack();
 
-void motorStart()
+void motorSet()
 {
     motorLeft();
     motorRight();
