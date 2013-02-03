@@ -23,7 +23,7 @@ void motorLeft(int gyroZ)
     pwm = PWM_L_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_Y] - 128) * PWM_HANDLE
-            - anglePd[0] - gyroPd[0];
+            - anglePd[1] - gyroPd[1];
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm -= gyroZ * PWM_POSTURE;
@@ -41,7 +41,7 @@ void motorRight(int gyroZ)
     pwm = PWM_R_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_Y]) * PWM_HANDLE
-            + anglePd[0] + gyroPd[0];
+            + anglePd[1] + gyroPd[1];
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm -= gyroZ * PWM_POSTURE;
@@ -59,7 +59,7 @@ void motorFront(int gyroZ)
     pwm = PWM_F_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_X]) * PWM_HANDLE
-            - anglePd[1] + gyroPd[1];
+            - anglePd[0] + gyroPd[0];
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm += gyroZ * PWM_POSTURE;
@@ -77,7 +77,7 @@ void motorBack(int gyroZ)
     pwm = PWM_B_BASE
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_X] - 128) * PWM_HANDLE
-            + anglePd[1] - gyroPd[1];
+            + anglePd[0] - gyroPd[0];
 
     if (rx.buf[RX_ROTATE] == 128) {
         pwm += gyroZ * PWM_POSTURE;
