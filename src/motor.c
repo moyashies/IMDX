@@ -4,6 +4,7 @@
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
+#define PWM_LIMIT(__pwm) MAX(PWM_MIN, MIN(__pwm, PWM_MAX));
 
 static inline int pwm_limit(int pwm);
 
@@ -30,7 +31,7 @@ void motorLeft(int gyroZ)
         pwm += (rx.buf[RX_ROTATE] - 128) * PWM_ROTATE;
     }
 
-    motor.left = pwm_limit(pwm);
+    motor.left = PWM_LIMIT(pwm);
 }
 
 void motorRight(int gyroZ)
@@ -48,7 +49,7 @@ void motorRight(int gyroZ)
         pwm += (rx.buf[RX_ROTATE] - 128) * PWM_ROTATE;
     }
 
-    motor.right = pwm_limit(pwm);
+    motor.right = PWM_LIMIT(pwm);
 }
 
 void motorFront(int gyroZ)
@@ -66,7 +67,7 @@ void motorFront(int gyroZ)
         pwm += (128 - rx.buf[RX_ROTATE]) * PWM_ROTATE;
     }
 
-    motor.front = pwm_limit(pwm);
+    motor.front = PWM_LIMIT(pwm);
 }
 
 void motorBack(int gyroZ)
@@ -84,10 +85,5 @@ void motorBack(int gyroZ)
         pwm += (128 - rx.buf[RX_ROTATE]) * PWM_ROTATE;
     }
 
-    motor.back = pwm_limit(pwm);
-}
-
-static inline int pwm_limit(int pwm)
-{
-    return MAX(PWM_MIN, MIN(pwm, PWM_MAX));
+    motor.back = PWM_LIMIT(pwm);
 }
