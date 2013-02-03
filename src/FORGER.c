@@ -71,9 +71,10 @@ int acce[3], gyro[3];
 int angleBefore[2] = {};
 int gyroBefore[3] = {};
 
+int anglePd[2], gyroPd[3];
+
 struct pwm motor;
 struct rx rx;
-struct pd anglePd, gyroPd;
 
 int main(void)
 {
