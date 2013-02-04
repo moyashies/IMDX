@@ -9,7 +9,6 @@
       <itemPath>h/receive.h</itemPath>
       <itemPath>h/sensor.h</itemPath>
       <itemPath>h/transmit.h</itemPath>
-      <itemPath>h/pd.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -25,7 +24,6 @@
       <itemPath>src/sensor.c</itemPath>
       <itemPath>src/transmit.c</itemPath>
       <itemPath>src/traps.c</itemPath>
-      <itemPath>src/pd.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
