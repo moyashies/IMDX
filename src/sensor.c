@@ -10,6 +10,11 @@
 #define ANGULAR_VELOCITY 0.6283185307179586 /* 2 * M_PI * 0.1 */
 #define ANGLE 0.12566370614359174 /* ANGULAR_VELOCITY * SENSOR_CYCLE */
 
+#define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
+#define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
+#define ANGLE_LIMIT(__angle) MAX(-30, MIN(__angle, 30))
+#define GYRO_LIMIT(__gyro) MAX(-40, MIN(__gyro, 40))
+
 static inline int angleAcceX();
 static inline int angleAcceY();
 static inline int angleAcceZ();
@@ -34,6 +39,9 @@ void setAnglePd()
         + (angleBefore[0] - angle[0]) * (rx.buf[RX_ANGLE_KD] / 10);
     anglePd[1] = angle[1] * (rx.buf[RX_ANGLE_KP] / 10)
         + (angleBefore[1] - angle[1]) * (rx.buf[RX_ANGLE_KD] / 10);
+
+    anglePd[0] = ANGLE_LIMIT(anglePd[0]);
+    anglePd[1] = ANGLE_LIMIT(anglePd[1]);
 }
 
 void setGyroPd()
@@ -44,6 +52,10 @@ void setGyroPd()
         + (gyroBefore[1] - gyro[1]) * (rx.buf[RX_ANGLE_KD] / 10);
     gyroPd[2] = gyro[2] * (rx.buf[RX_ANGLE_KP] / 10)
         + (gyroBefore[2] - gyro[2]) * (rx.buf[RX_ANGLE_KD] / 10);
+
+    gyroPd[0] = GYRO_LIMIT(gyroPd[0]);
+    gyroPd[1] = GYRO_LIMIT(gyroPd[1]);
+    gyroPd[2] = GYRO_LIMIT(gyroPd[2]);
 }
 
 static inline int angleAcceX()

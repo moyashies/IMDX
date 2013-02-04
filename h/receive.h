@@ -13,7 +13,10 @@ enum rx_protocol {
    RX_ANGLE_KP = 7,  /* h */
    RX_ANGLE_KD = 8,  /* i */
    RX_GYRO_KP  = 9,  /* j */
-   RX_GYRO_KD  = 10  /* k */
+   RX_GYRO_KD  = 10, /* k */
+
+   RX_ANGLE_GAIN = 11, /* l */
+   RX_GYRO_GAIN  = 12  /* m */
 };
 
 struct rx {
