@@ -344,18 +344,18 @@ void _ISRFAST _T1Interrupt(void)
 
     // motorEnable
     if (sswV && !rx.timeout) {
+        setAnglePd();
+        angleBefore[0] = angle[0];
+        angleBefore[1] = angle[1];
+
+        setGyroPd();
+        gyroBefore[0] = gyro[0];
+        gyroBefore[1] = gyro[1];
+        gyroBefore[2] = gyro[2];
+
         if (rx.ok) {
             rx.ok = 0;
             if (rx.buf[RX_TRIGGER] == 1) {
-                setAnglePd();
-                angleBefore[0] = angle[0];
-                angleBefore[1] = angle[1];
-
-                setGyroPd();
-                gyroBefore[0] = gyro[0];
-                gyroBefore[1] = gyro[1];
-                gyroBefore[2] = gyro[2];
-
                 motorSet();
             } else {
                 motorStop();
