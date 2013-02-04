@@ -58,6 +58,10 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
+	gcc -Wall -g -DTEST_IMDX t/02_tx.c src/transmit.c -o t/02_tx
+	prove --norc -fo t/02_tx.t
+	gcc -Wall -g -DTEST_IMDX t/03_rx.c src/receive.c -o t/03_rx
+	prove --norc -fo t/03_rx.t
 
 
 # clean
