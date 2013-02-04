@@ -5,7 +5,7 @@
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
-#define PWM_LIMIT(__pwm) MAX(PWM_MIN, MIN(__pwm, PWM_MAX));
+#define PWM_LIMIT(__pwm) MAX(PWM_MIN, MIN(__pwm, PWM_MAX))
 
 static inline void motorLeft();
 static inline void motorRight();
