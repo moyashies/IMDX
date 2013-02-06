@@ -46,12 +46,12 @@ void setAnglePd()
 
 void setGyroPd()
 {
-    gyroPd[0] = gyro[0] * (rx.buf[RX_ANGLE_KP] / 10)
-        + (gyroBefore[0] - gyro[0]) * (rx.buf[RX_ANGLE_KD] / 10);
-    gyroPd[1] = gyro[1] * (rx.buf[RX_ANGLE_KP] / 10)
-        + (gyroBefore[1] - gyro[1]) * (rx.buf[RX_ANGLE_KD] / 10);
-    gyroPd[2] = gyro[2] * (rx.buf[RX_ANGLE_KP] / 10)
-        + (gyroBefore[2] - gyro[2]) * (rx.buf[RX_ANGLE_KD] / 10);
+    gyroPd[0] = gyro[0] * (rx.buf[RX_GYRO_KP] / 10)
+        + (gyroBefore[0] - gyro[0]) * (rx.buf[RX_GYRO_KD] / 10);
+    gyroPd[1] = gyro[1] * (rx.buf[RX_GYRO_KP] / 10)
+        + (gyroBefore[1] - gyro[1]) * (rx.buf[RX_GYRO_KD] / 10);
+    gyroPd[2] = gyro[2] * (rx.buf[RX_GYRO_KP] / 10)
+        + (gyroBefore[2] - gyro[2]) * (rx.buf[RX_GYRO_KD] / 10);
 
     gyroPd[0] = GYRO_LIMIT(gyroPd[0]);
     gyroPd[1] = GYRO_LIMIT(gyroPd[1]);
