@@ -19,16 +19,12 @@ static inline int angleAcceX();
 static inline int angleAcceY();
 static inline int angleAcceZ();
 
-/* roll angle */
-void setAngleX()
+void setAngle()
 {
+    /* roll angle */
     angle[0] -= angle[0] * ANGLE + angleAcceX() * ANGLE
         + gyro[0] * SENSOR_CYCLE;
-}
-
-/* pitch angle */
-void setAngleY()
-{
+    /* pitch angle */
     angle[1] -= angle[1] * ANGLE + angleAcceY() * ANGLE
         + gyro[1] * SENSOR_CYCLE;
 }

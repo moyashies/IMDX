@@ -6,8 +6,7 @@ extern int angle[2];
 extern int angleBefore[2], gyroBefore[3];
 extern int anglePd[2], gyroPd[3];
 
-void setAngleX();
-void setAngleY();
+void setAngle();
 
 void setAnglePd();
 void setGyroPd();
