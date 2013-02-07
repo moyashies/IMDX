@@ -258,8 +258,8 @@ void _ISR _U1RXInterrupt(void)
     case 'i': /* angle KD */
     case 'j': /* gyro KP */
     case 'k': /* gyro KD */
-    case 'l':
-    case 'm':
+    case 'l': /* angle gain */
+    case 'm': /* gyro gain */
     case 'n':
     case 'o':
     case 'p':

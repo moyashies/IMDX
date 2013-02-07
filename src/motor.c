@@ -27,6 +27,7 @@ void motorStop()
     motor.back  = PWM_STOP;
 }
 
+/* up: -angle, +gyro */
 static inline void motorLeft()
 {
     int pwm;
@@ -46,6 +47,7 @@ static inline void motorLeft()
     motor.left = PWM_LIMIT(pwm);
 }
 
+/* up: +angle, -gyro */
 static inline void motorRight()
 {
     int pwm;
@@ -65,6 +67,7 @@ static inline void motorRight()
     motor.right = PWM_LIMIT(pwm);
 }
 
+/* up: -angle, -gyro */
 static inline void motorFront()
 {
     int pwm;
@@ -84,6 +87,7 @@ static inline void motorFront()
     motor.front = PWM_LIMIT(pwm);
 }
 
+/* up: +angle, +gyro */
 static inline void motorBack()
 {
     int pwm;
