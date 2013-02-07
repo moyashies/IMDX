@@ -12,7 +12,7 @@
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
-#define ANGLE_LIMIT(__angle) MAX(-30, MIN(__angle, 30))
+#define ANGLE_LIMIT(__angle) MAX(-35, MIN(__angle, 35))
 #define GYRO_LIMIT(__gyro) MAX(-40, MIN(__gyro, 40))
 
 static inline int angleAcceX();
