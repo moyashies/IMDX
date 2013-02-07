@@ -1,6 +1,14 @@
+#ifndef TEST_IMDX
+#  include <xc.h>
+#endif
 #include "../h/motor.h"
 #include "../h/receive.h"
 #include "../h/sensor.h"
+
+#define PWML PDC3
+#define PWMR OC2R /* differ from other modules, you have to divide by 2. */
+#define PWMF PDC1
+#define PWMB PDC2
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
@@ -10,6 +18,14 @@ static inline void motorLeft();
 static inline void motorRight();
 static inline void motorFront();
 static inline void motorBack();
+
+void motorRefresh()
+{
+    PWML = motor.left;
+    PWMR = motor.right / 2;
+    PWMF = motor.front;
+    PWMB = motor.back;
+}
 
 void motorSet()
 {

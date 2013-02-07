@@ -25,6 +25,7 @@ struct pwm {
 
 extern struct pwm motor;
 
+void motorRefresh();
 void motorSet();
 void motorStop();
 

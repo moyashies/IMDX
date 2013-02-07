@@ -22,11 +22,6 @@ _FGS(GWRP_OFF & GCP_OFF);
 #define P_LED2 LATBbits.LATB0
 #define P_LED3 LATBbits.LATB1
 
-#define PWML PDC3
-#define PWMR OC2R /* differ from other modules, you have to divide by 2. */
-#define PWMF PDC1
-#define PWMB PDC2
-
 void initOsc();
 void initPort();
 void initPmd();
@@ -36,7 +31,6 @@ void initUART();
 void initTimer();
 void initOC1();
 void initInt();
-void motorRefresh();
 void beep(unsigned int wait);
 
 // Instantiate Drive and Data objects
@@ -530,14 +524,6 @@ void initInt()
     IPC6 = 0x4444; // T4IP
     IFS0 = 0x0000; // T1
     IFS1 = 0x0000;
-}
-
-void motorRefresh()
-{
-    PWML = motor.left;
-    PWMR = motor.right / 2;
-    PWMF = motor.front;
-    PWMB = motor.back;
 }
 
 void beep(unsigned int wait)
