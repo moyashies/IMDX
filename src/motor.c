@@ -48,7 +48,7 @@ static inline void motorLeft()
 {
     int pwm;
 
-    pwm = PWM_L_BASE
+    pwm = PWM_BASE + (rx.buf[RX_MOTOR_L_BASE] * 10)
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_Y] - 128) * PWM_HANDLE;
 
@@ -71,7 +71,7 @@ static inline void motorRight()
 {
     int pwm;
 
-    pwm = PWM_R_BASE
+    pwm = PWM_BASE + (rx.buf[RX_MOTOR_R_BASE] * 10)
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_Y]) * PWM_HANDLE;
 
@@ -94,7 +94,7 @@ static inline void motorFront()
 {
     int pwm;
 
-    pwm = PWM_F_BASE
+    pwm = PWM_BASE + (rx.buf[RX_MOTOR_F_BASE] * 10)
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_X]) * PWM_HANDLE;
 
@@ -117,7 +117,7 @@ static inline void motorBack()
 {
     int pwm;
 
-    pwm = PWM_B_BASE
+    pwm = PWM_BASE + (rx.buf[RX_MOTOR_B_BASE] * 10)
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_X] - 128) * PWM_HANDLE;
 

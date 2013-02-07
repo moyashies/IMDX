@@ -255,16 +255,16 @@ void _ISR _U1RXInterrupt(void)
     case 'd': /* handle y */
     case 'e': /* throttle */
     case 'f': /* trigger */
-    case 'g':
-    case 'h': /* angle KP */
-    case 'i': /* angle KD */
-    case 'j': /* gyro KP */
-    case 'k': /* gyro KD */
-    case 'l': /* angle gain */
-    case 'm': /* gyro gain */
-    case 'n':
-    case 'o':
-    case 'p':
+    case 'g': /* angle KP */
+    case 'h': /* angle KDP */
+    case 'i': /* gyro KP */
+    case 'j': /* gyro KD */
+    case 'k': /* angle gain */
+    case 'l': /* gyro gain */
+    case 'm': /* motor left PWM base */
+    case 'n': /* motor right PWM base */
+    case 'o': /* motor front PWM base */
+    case 'p': /* motor back PWM base */
         rxIndex(c);
         break;
     case '0':
