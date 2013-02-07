@@ -217,9 +217,10 @@ int main(void)
             acce[0], acce[1], acce[2],
             gyro[0], gyro[1], gyro[2],
             angle[0], angle[1]);
-
         stf("M,%d,%d,%d,%d\n",
             motor.left, motor.right, motor.front, motor.back);
+        stf("AP,%d,%d\n", anglePd[0], anglePd[1]);
+        stf("GP,%d,%d,%d\n", gyroPd[0], gyroPd[1], gyroPd[2]);
     }
     return 0;
 }
