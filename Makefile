@@ -46,6 +46,7 @@
 # Environment 
 MKDIR=mkdir
 CP=cp
+RM_F=rm -f
 CCADMIN=CCadmin
 RANLIB=ranlib
 
@@ -72,6 +73,10 @@ clean: .clean-post
 
 .clean-post: .clean-impl
 # Add your post 'clean' code here...
+	$(RM_F) t/02_tx
+	$(RM_F) -r t/02_tx.dSYM
+	$(RM_F) t/03_rx
+	$(RM_F) -r t/03_rx.dSYM
 
 
 # clobber
