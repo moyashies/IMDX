@@ -23,7 +23,7 @@ void setAngle()
 {
     /* roll angle */
     angle[0] -= angle[0] * ANGLE + angleAcceX() * ANGLE
-        + gyro[0] * SENSOR_CYCLE;
+        - gyro[0] * SENSOR_CYCLE;
     /* pitch angle */
     angle[1] -= angle[1] * ANGLE + angleAcceY() * ANGLE
         + gyro[1] * SENSOR_CYCLE;
