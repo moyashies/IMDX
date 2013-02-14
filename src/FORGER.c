@@ -256,7 +256,7 @@ void _ISR _U1RXInterrupt(void)
     case 'e': /* throttle */
     case 'f': /* trigger */
     case 'g': /* angle KP */
-    case 'h': /* angle KDP */
+    case 'h': /* angle KD */
     case 'i': /* gyro KP */
     case 'j': /* gyro KD */
     case 'k': /* angle gain */
