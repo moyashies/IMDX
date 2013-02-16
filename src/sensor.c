@@ -12,8 +12,8 @@
 
 #define MIN(__a, __b) ((__a) < (__b) ? (__a) : (__b))
 #define MAX(__a, __b) ((__a) > (__b) ? (__a) : (__b))
-#define ANGLE_LIMIT(__angle) MAX(-35, MIN(__angle, 35))
-#define GYRO_LIMIT(__gyro) MAX(-40, MIN(__gyro, 40))
+#define ANGLE_LIMIT(__angle) MAX(-25, MIN(__angle, 25))
+#define GYRO_LIMIT(__gyro) MAX(-35, MIN(__gyro, 35))
 
 static inline int angleAcceX();
 static inline int angleAcceY();
@@ -31,10 +31,10 @@ void setAngle()
 
 void setAnglePd()
 {
-    anglePd[0] = angle[0] * (rx.buf[RX_ANGLE_KP] / 10.0)
-        + (angleBefore[0] - angle[0]) * (rx.buf[RX_ANGLE_KD] / 10.0);
-    anglePd[1] = angle[1] * (rx.buf[RX_ANGLE_KP] / 10.0)
-        + (angleBefore[1] - angle[1]) * (rx.buf[RX_ANGLE_KD] / 10.0);
+    anglePd[0] = angle[0] * (rx.buf[RX_ANGLE_KP] / 100.0)
+        + (angleBefore[0] - angle[0]) * (rx.buf[RX_ANGLE_KD] / 100.0);
+    anglePd[1] = angle[1] * (rx.buf[RX_ANGLE_KP] / 100.0)
+        + (angleBefore[1] - angle[1]) * (rx.buf[RX_ANGLE_KD] / 100.0);
 
     anglePd[0] = ANGLE_LIMIT(anglePd[0]);
     anglePd[1] = ANGLE_LIMIT(anglePd[1]);
@@ -42,12 +42,12 @@ void setAnglePd()
 
 void setGyroPd()
 {
-    gyroPd[0] = gyro[0] * (rx.buf[RX_GYRO_KP] / 10.0)
-        + (gyroBefore[0] - gyro[0]) * (rx.buf[RX_GYRO_KD] / 10.0);
-    gyroPd[1] = gyro[1] * (rx.buf[RX_GYRO_KP] / 10.0)
-        + (gyroBefore[1] - gyro[1]) * (rx.buf[RX_GYRO_KD] / 10.0);
-    gyroPd[2] = gyro[2] * (rx.buf[RX_GYRO_KP] / 10.0)
-        + (gyroBefore[2] - gyro[2]) * (rx.buf[RX_GYRO_KD] / 10.0);
+    gyroPd[0] = gyro[0] * (rx.buf[RX_GYRO_KP] / 100.0)
+        + (gyroBefore[0] - gyro[0]) * (rx.buf[RX_GYRO_KD] / 100.0);
+    gyroPd[1] = gyro[1] * (rx.buf[RX_GYRO_KP] / 100.0)
+        + (gyroBefore[1] - gyro[1]) * (rx.buf[RX_GYRO_KD] / 100.0);
+    gyroPd[2] = gyro[2] * (rx.buf[RX_GYRO_KP] / 100.0)
+        + (gyroBefore[2] - gyro[2]) * (rx.buf[RX_GYRO_KD] / 100.0);
 
     gyroPd[0] = GYRO_LIMIT(gyroPd[0]);
     gyroPd[1] = GYRO_LIMIT(gyroPd[1]);

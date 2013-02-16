@@ -52,7 +52,7 @@ static inline void motorLeft()
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_Y] - 128) * PWM_HANDLE;
 
-    if (-30 < gyroPd[1] && gyroPd[1] < 30) {
+    if (angle[1] < -6 && 6 < angle[1]) {
         pwm += anglePd[1] * rx.buf[RX_ANGLE_GAIN];
     }
     pwm -= gyroPd[1] * rx.buf[RX_GYRO_GAIN];
@@ -75,7 +75,7 @@ static inline void motorRight()
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_Y]) * PWM_HANDLE;
 
-    if (-30 < gyroPd[1] && gyroPd[1] < 30) {
+    if (angle[1] < -6 && 6 < angle[1]) {
         pwm -= anglePd[1] * rx.buf[RX_ANGLE_GAIN];
     }
     pwm += gyroPd[1] * rx.buf[RX_GYRO_GAIN];
@@ -98,7 +98,7 @@ static inline void motorFront()
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (128 - rx.buf[RX_HANDLE_X]) * PWM_HANDLE;
 
-    if (-30 < gyroPd[0] && gyroPd[0] < 30) {
+    if (angle[0] < -6 && 6 < angle[0]) {
         pwm += anglePd[0] * rx.buf[RX_ANGLE_GAIN];
     }
     pwm += gyroPd[0] * rx.buf[RX_GYRO_GAIN];
@@ -121,7 +121,7 @@ static inline void motorBack()
         + (rx.buf[RX_THROTTLE] - 128) * PWM_THROTTLE
         + (rx.buf[RX_HANDLE_X] - 128) * PWM_HANDLE;
 
-    if (-30 < gyroPd[0] && gyroPd[0] < 30) {
+    if (angle[0] < -6 && 6 < angle[0]) {
         pwm -= anglePd[0] * rx.buf[RX_ANGLE_GAIN];
     }
     pwm -= gyroPd[0] * rx.buf[RX_GYRO_GAIN];

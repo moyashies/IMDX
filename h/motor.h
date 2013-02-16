@@ -8,7 +8,7 @@
 #define PWM_STOP 18000
 
 #define PWM_THROTTLE 14
-#define PWM_HANDLE 2
+#define PWM_HANDLE 1
 #define PWM_POSTURE 14
 #define PWM_ROTATE 4
 
