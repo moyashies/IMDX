@@ -218,10 +218,34 @@ int main(void)
             acce[0], acce[1], acce[2],
             gyro[0], gyro[1], gyro[2],
             angle[0], angle[1]);
-        stf("M,%d,%d,%d,%d\n",
-            motor.left, motor.right, motor.front, motor.back);
         stf("AP,%d,%d\n", anglePd[0], anglePd[1]);
         stf("GP,%d,%d,%d\n", gyroPd[0], gyroPd[1], gyroPd[2]);
+
+        int ml, mr, mf, mb;
+        ml = motor.left  - PWM_L_BASE - rx.buf[RX_MOTOR_L_BASE];
+        mr = motor.right - PWM_R_BASE - rx.buf[RX_MOTOR_R_BASE];
+        mf = motor.front - PWM_F_BASE - rx.buf[RX_MOTOR_F_BASE];
+        mb = motor.back  - PWM_B_BASE - rx.buf[RX_MOTOR_B_BASE];
+        int motorMax;
+        char* motorName;
+        if (ml >= mr) {
+            motorMax = ml;
+            motorName = "left";
+        } else {
+            motorMax = mr;
+            motorName = "right";
+        }
+        if (mf >= motorMax) {
+            motorMax = mf;
+            motorName = "front";
+        }
+        if (mb >= motorMax) {
+            motorMax = mb;
+            motorName = "back";
+        }
+        stf("[INFO] max: %s (%d)\n", motorName, motorMax);
+        stf("M,%d,%d,%d,%d\n",
+            ml, mr, mf, mb);
     }
     return 0;
 }
