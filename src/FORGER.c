@@ -249,7 +249,7 @@ void _ISR _U1RXInterrupt(void)
     case 'r':
         rxCommit();
         break;
-    case 'a':
+    case 'a': /* mode */
     case 'b': /* rotate */
     case 'c': /* handle x */
     case 'd': /* handle y */
